@@ -12,21 +12,33 @@ import lombok.*;
 public class InstanceEntity {
 
   @Id
-  @Column(name = "InsEmpCod")
-  private Long companyId;
+  @OneToOne
+  @JoinColumn(name = "InsEmpCod", nullable = false)
+  private CompanyEntity company;
 
-  @Column(name = "InsTipBdCod", nullable = false)
-  private Integer dbTypeCode;
+  @ManyToOne
+  @JoinColumn(name = "InsEstConCod", nullable = false)
+  private ConnectionStateEntity connectionState;
 
-  @Column(name = "InsEstConCod", nullable = false)
-  private Integer connectionStatusCode;
+  @ManyToOne
+  @JoinColumn(name = "InsTipBdCod", nullable = false)
+  private DatabaseTypeEntity dbType;
 
-  @Column(name = "InsNomBd", nullable = false)
+  @Column(name = "InsNomBd", nullable = false, length = 50)
   private String dbName;
 
-  @Column(name = "InsUriCon", nullable = false)
+  @Column(name = "InsUriCon", nullable = false, length = 255)
   private String dbUri;
 
+  @Column(name = "InsUsuBd", nullable = false, length = 100)
+  private String dbUsername;
+
+  @Column(name = "InsClaBd", nullable = false, length = 100)
+  private String dbPassword;
+
   @Column(name = "InsFecAct")
-  private Integer lastActivatedDate;
+  private Integer lastActiveDate;
+
+  @Column(name = "InsEstReg", nullable = false, length = 1)
+  private String recordState; 
 }
