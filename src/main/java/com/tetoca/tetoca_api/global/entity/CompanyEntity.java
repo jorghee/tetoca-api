@@ -12,24 +12,29 @@ import lombok.*;
 public class CompanyEntity {
 
   @Id
-  @Column(name = "EmpCodEmp")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "EmpCod")
   private Long id;
 
-  @Column(name = "EmpNom", nullable = false)
-  private String commercialName;
+  @ManyToOne
+  @JoinColumn(name = "EmpEstEmpCod", nullable = false)
+  private CompanyStateEntity state;
 
-  @Column(name = "EmpRuc", nullable = false)
-  private String taxId;
+  @Column(name = "EmpNom", nullable = false, length = 100)
+  private String name;
 
-  @Column(name = "EmpCorEle", nullable = false)
+  @Column(name = "EmpRuc", nullable = false, length = 11, unique = true)
+  private String ruc;
+
+  @Column(name = "EmpCorEle", nullable = false, length = 100)
   private String email;
 
-  @Column(name = "EmpEstEmpCod", nullable = false)
-  private Integer statusCode;
-
-  @Column(name = "EmpFecReg")
+  @Column(name = "EmpFecReg", nullable = false)
   private Integer registrationDate;
 
-  @Column(name = "EmpObs")
+  @Column(name = "EmpObs", length = 255)
   private String notes;
+
+  @Column(name = "EmpEstReg", nullable = false, length = 1)
+  private String recordState;
 }
