@@ -1,26 +1,28 @@
 package com.tetoca.tetoca_api.multitenant.provider;
 
+import com.tetoca.tetoca_api.global.entity.InstanceEntity;
+import com.tetoca.tetoca_api.global.repository.InstanceRepository;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
+import org.springframework.stereotype.Component;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.sql.DataSource;
 
-import com.tetoca.tetoca_api.global.entity.InstanceEntity;
-import com.tetoca.tetoca_api.global.repository.InstanceRepository;
-import com.zaxxer.hikari.HikariDataSource;
-import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionProvider {
 
-  private static final long serialVersionUID = 1L;
-  private final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
+  private final InstanceRepository instanceRepository;
+  private final DataSource defaultDataSource;
 
-  @Autowired
-  private InstanceRepository instanceRepository;
+  private final Map<String, DataSource> tenantDataSources = new ConcurrentHashMap<>();
 
   @Override
   public Connection getConnection(String tenantIdentifier) throws SQLException {
@@ -28,41 +30,41 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
   }
 
   @Override
-  public DataSource selectDataSource(String tenantIdentifier) {
-    return getDataSource(tenantIdentifier);
+  public Connection getConnection() throws SQLException {
+    return defaultDataSource.getConnection();
+  }
+
+  @Override
+  public void releaseConnection(String tenantIdentifier, Connection connection) throws SQLException {
+    connection.close();
+  }
+
+  @Override
+  public void releaseConnection(Connection connection) throws SQLException {
+    connection.close();
   }
 
   private DataSource getDataSource(String tenantIdentifier) {
-    return dataSources.computeIfAbsent(tenantIdentifier, this::createDataSourceForTenant);
+    return tenantDataSources.computeIfAbsent(tenantIdentifier, this::createDataSourceForTenant);
   }
 
   private DataSource createDataSourceForTenant(String tenantIdentifier) {
-    InstanceEntity instance = instanceRepository.findByEmpresaNombreIgnoreCase(tenantIdentifier)
+    InstanceEntity instance = instanceRepository.findByCompanyNameIgnoreCase(tenantIdentifier)
       .orElseThrow(() -> new RuntimeException("Tenant not found: " + tenantIdentifier));
 
-    // Use confidential.properties to credentials
-    HikariDataSource ds = new HikariDataSource();
-    ds.setJdbcUrl(instance.getInsUriCon());
-    ds.setUsername("db_user");
-    ds.setPassword("db_pass");
-    ds.setPoolName("Hikari-" + tenantIdentifier);
-    ds.setMaximumPoolSize(5);
-    return ds;
+    HikariConfig config = new HikariConfig();
+    config.setJdbcUrl(instance.getDbUri());
+    config.setUsername(instance.getDbUser());
+    config.setPassword(instance.getDbPassword());
+    config.setMaximumPoolSize(5);
+    config.setPoolName("Hikari-" + tenantIdentifier);
+
+    return new HikariDataSource(config);
   }
 
   @Override
   public boolean supportsAggressiveRelease() {
     return false;
-  }
-
-  @Override
-  public Connection getAnyConnection() throws SQLException {
-    throw new UnsupportedOperationException("getAnyConnection not supported");
-  }
-
-  @Override
-  public void releaseAnyConnection(Connection connection) throws SQLException {
-    throw new UnsupportedOperationException("releaseAnyConnection not supported");
   }
 
   @Override
