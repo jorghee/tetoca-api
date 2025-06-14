@@ -3,7 +3,9 @@ package com.tetoca.tetoca_api.multitenant.filter;
 import com.tetoca.tetoca_api.multitenant.context.TenantContextHolder;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.util.Set;
@@ -12,24 +14,28 @@ import java.util.Set;
 public class TenantFilter implements Filter {
 
   private static final String TENANT_PREFIX = "/tenant/";
-  private static final Set<String> IGNORED_PATHS = Set.of(
-    "/auth", "/public", "/docs", "/favicon.ico"
-  );
+  private final Set<String> IGNORED_PATHS;
+
+  public TenantFilter(@Value("${multitenant.ignored-paths}") Set<String> ignoredPaths) {
+    this.IGNORED_PATHS = ignoredPaths;
+  }
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
 
     HttpServletRequest httpRequest = (HttpServletRequest) request;
+    HttpServletResponse httpResponse = (HttpServletResponse) response;
     String path = httpRequest.getRequestURI();
 
     if (!shouldIgnore(path)) {
       String tenantId = extractTenantIdFromPath(path);
-      if (tenantId != null && !tenantId.isBlank()) {
-        TenantContextHolder.setTenantId(tenantId);
-      } else {
-        throw new ServletException("Tenant ID is missing in path: " + path);
+      if (tenantId == null || tenantId.isBlank()) {
+        httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, 
+            "Missing or invalid tenant identifier");
+        return;
       }
+      TenantContextHolder.setTenantId(tenantId);
     }
 
     try {
