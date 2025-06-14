@@ -12,15 +12,15 @@ import lombok.*;
 public class InstanceEntity {
 
   @Id
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "InsEmpCod", nullable = false)
   private CompanyEntity company;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "InsEstConCod", nullable = false)
   private ConnectionStateEntity connectionState;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "InsTipBdCod", nullable = false)
   private DatabaseTypeEntity dbType;
 
@@ -40,5 +40,5 @@ public class InstanceEntity {
   private Integer lastActiveDate;
 
   @Column(name = "InsEstReg", nullable = false, length = 1)
-  private String recordState; 
+  private String status; 
 }

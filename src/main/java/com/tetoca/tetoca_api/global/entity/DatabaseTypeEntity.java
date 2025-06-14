@@ -5,8 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "GZZ_TIPO_DB")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -23,5 +22,5 @@ public class DatabaseTypeEntity {
   private String description;
 
   @Column(name = "TipBdEstReg", nullable = false, length = 1)
-  private String recordState;
+  private String status;
 }

@@ -1,0 +1,26 @@
+package com.tetoca.tetoca_api.global.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "GZZ_CATEGORIA_EMPRESA")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CompanyCategoryEntity {
+
+  @Id
+  @Column(name = "CatEmpCod")
+  private Integer id;
+
+  @Column(name = "CatEmpNom", nullable = false, unique = true, length = 30)
+  private String name;
+
+  @Column(name = "CatEmpDes", length = 100)
+  private String description;
+
+  @Column(name = "CatEmpEstReg", nullable = false, length = 1)
+  private String status;
+}
