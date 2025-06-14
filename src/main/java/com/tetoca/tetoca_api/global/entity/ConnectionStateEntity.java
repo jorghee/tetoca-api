@@ -5,10 +5,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "GZZ_ESTADO_CONEXION")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ConnectionStateEntity {
 
   @Id

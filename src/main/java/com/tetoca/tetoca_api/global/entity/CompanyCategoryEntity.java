@@ -5,10 +5,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "GZZ_CATEGORIA_EMPRESA")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class CompanyCategoryEntity {
 
   @Id

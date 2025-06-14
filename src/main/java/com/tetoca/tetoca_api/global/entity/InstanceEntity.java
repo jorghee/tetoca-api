@@ -5,7 +5,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "G2M_INSTANCIA")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

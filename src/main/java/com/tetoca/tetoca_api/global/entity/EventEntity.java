@@ -5,9 +5,11 @@ import lombok.*;
 
 @Entity
 @Table(name = "G3H_EVENTO")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class EventEntity {
 
   @Id

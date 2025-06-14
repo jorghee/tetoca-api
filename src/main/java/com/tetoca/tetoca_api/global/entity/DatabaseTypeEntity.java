@@ -5,10 +5,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "GZZ_TIPO_DB")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class DatabaseTypeEntity {
 
   @Id

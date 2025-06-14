@@ -5,9 +5,11 @@ import lombok.*;
 
 @Entity
 @Table(name = "G1M_CLIENTE")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ClientEntity {
 
   @Id

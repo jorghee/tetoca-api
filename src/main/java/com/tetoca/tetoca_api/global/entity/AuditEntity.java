@@ -5,9 +5,11 @@ import lombok.*;
 
 @Entity
 @Table(name = "G3C_AUDITORIA")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AuditEntity {
 
   @Id

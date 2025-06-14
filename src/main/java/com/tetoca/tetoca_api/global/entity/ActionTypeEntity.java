@@ -5,7 +5,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "GZZ_TIPO_ACCION")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ActionTypeEntity {
