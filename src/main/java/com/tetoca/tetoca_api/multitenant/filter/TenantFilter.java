@@ -4,12 +4,17 @@ import com.tetoca.tetoca_api.multitenant.context.TenantContextHolder;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
+
 import java.io.IOException;
+import java.util.Set;
 
 @Component
 public class TenantFilter implements Filter {
 
   private static final String TENANT_PREFIX = "/tenant/";
+  private static final Set<String> IGNORED_PATHS = Set.of(
+    "/auth", "/public", "/docs", "/favicon.ico"
+  );
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -18,9 +23,13 @@ public class TenantFilter implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     String path = httpRequest.getRequestURI();
 
-    String tenantId = extractTenantIdFromPath(path);
-    if (tenantId != null && !tenantId.isBlank()) {
-      TenantContextHolder.setTenantId(tenantId);
+    if (!shouldIgnore(path)) {
+      String tenantId = extractTenantIdFromPath(path);
+      if (tenantId != null && !tenantId.isBlank()) {
+        TenantContextHolder.setTenantId(tenantId);
+      } else {
+        throw new ServletException("Tenant ID is missing in path: " + path);
+      }
     }
 
     try {
@@ -28,6 +37,10 @@ public class TenantFilter implements Filter {
     } finally {
       TenantContextHolder.clear();
     }
+  }
+
+  private boolean shouldIgnore(String path) {
+    return IGNORED_PATHS.stream().anyMatch(path::startsWith);
   }
 
   private String extractTenantIdFromPath(String path) {
