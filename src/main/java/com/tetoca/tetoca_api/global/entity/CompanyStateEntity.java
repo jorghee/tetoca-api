@@ -22,5 +22,5 @@ public class CompanyStateEntity {
   private String description;
 
   @Column(name = "EstEmpEstReg", nullable = false, length = 1)
-  private String recordState;
+  private String recordState = "A";
 }

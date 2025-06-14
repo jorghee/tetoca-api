@@ -22,5 +22,5 @@ public class ConnectionStateEntity {
   private String description;
 
   @Column(name = "EstConEstReg", nullable = false, length = 1)
-  private String status;
+  private String recordStatus = "A";
 }

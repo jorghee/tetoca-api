@@ -4,23 +4,22 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "GZZ_TIPO_DB")
+@Table(name = "GZZ_TIPO_ACCION")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class DatabaseTypeEntity {
+public class ActionTypeEntity {
 
   @Id
-  @Column(name = "TipBdCod")
+  @Column(name = "TipAccCod")
   private Integer id;
 
-  @Column(name = "TipBdNom", nullable = false, length = 30)
+  @Column(name = "TipAccNom", nullable = false, length = 30)
   private String name;
 
-  @Column(name = "TipBdDes", length = 100)
+  @Column(name = "TipAccDes", length = 100)
   private String description;
 
-  @Column(name = "TipBdEstReg", nullable = false, length = 1)
+  @Column(name = "TipAccEstReg", nullable = false, length = 1)
   private String recordStatus = "A";
 }

@@ -22,5 +22,5 @@ public class CompanyCategoryEntity {
   private String description;
 
   @Column(name = "CatEmpEstReg", nullable = false, length = 1)
-  private String status;
+  private String recordStatus = "A";
 }

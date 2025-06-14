@@ -31,14 +31,14 @@ public class InstanceEntity {
   private String dbUri;
 
   @Column(name = "InsUsuBd", nullable = false, length = 100)
-  private String dbUsername;
+  private String dbUser;
 
   @Column(name = "InsClaBd", nullable = false, length = 100)
   private String dbPassword;
 
   @Column(name = "InsFecAct")
-  private Integer lastActiveDate;
+  private Integer lastActivationDate;
 
   @Column(name = "InsEstReg", nullable = false, length = 1)
-  private String status; 
+  private String recordStatus = "A"; 
 }

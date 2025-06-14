@@ -18,11 +18,11 @@ public class CompanyEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EmpEstEmpCod", nullable = false)
-  private CompanyStateEntity state;
+  private CompanyStateEntity companyState;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "EmpCatEmpCod")
-  private CompanyCategoryEntity category;
+  @JoinColumn(name = "EmpCatEmpCod", nullable = false)
+  private CompanyCategoryEntity companyCategory;
 
   @Column(name = "EmpNom", nullable = false, length = 100)
   private String name;
@@ -34,11 +34,11 @@ public class CompanyEntity {
   private String email;
 
   @Column(name = "EmpFecReg", nullable = false)
-  private Integer registrationDate;
+  private Integer registerDate;
 
   @Column(name = "EmpObs", length = 255)
-  private String observation;
+  private String notes;
 
   @Column(name = "EmpEstReg", nullable = false, length = 1)
-  private String status;
+  private String recordStatus = "A";
 }
