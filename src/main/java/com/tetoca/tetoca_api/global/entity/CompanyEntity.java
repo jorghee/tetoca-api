@@ -14,11 +14,15 @@ public class CompanyEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "EmpCod")
-  private Long id;
+  private Integer id;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EmpEstEmpCod", nullable = false)
   private CompanyStateEntity state;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "EmpCatEmpCod")
+  private CompanyCategoryEntity category;
 
   @Column(name = "EmpNom", nullable = false, length = 100)
   private String name;
@@ -33,8 +37,8 @@ public class CompanyEntity {
   private Integer registrationDate;
 
   @Column(name = "EmpObs", length = 255)
-  private String notes;
+  private String observation;
 
   @Column(name = "EmpEstReg", nullable = false, length = 1)
-  private String recordState;
+  private String status;
 }
