@@ -13,5 +13,5 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, Integer>
 
   boolean existsByNameIgnoreCase(String name);
 
-  boolean existsByRucId(String ruc);
+  boolean existsByRuc(String ruc);
 }
