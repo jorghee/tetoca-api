@@ -27,7 +27,7 @@ public class CompanyRegistrationService {
   private EntityManager entityManager;
 
   @Transactional
-  public void registerCompany(RegisterCompanyRequest request) {
+  public void registerCompany(CompanyRegisterRequest request) {
 
     // Search references
     CompanyStateEntity companyState = companyStateRepository.findById(request.getStatusCode())
