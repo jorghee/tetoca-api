@@ -1,7 +1,7 @@
 package com.tetoca.tetoca_api.multitenant.provider;
 
-import com.tetoca.tetoca_api.global.entity.InstanceEntity;
-import com.tetoca.tetoca_api.global.repository.InstanceRepository;
+import com.tetoca.tetoca_api.models.global.InstanceEntity;
+import com.tetoca.tetoca_api.repositories.global.InstanceRepository;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
