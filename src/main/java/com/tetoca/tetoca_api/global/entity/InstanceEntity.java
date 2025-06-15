@@ -13,6 +13,10 @@ import lombok.*;
 public class InstanceEntity {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "InsCod")
+  private Integer id;
+
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "InsEmpCod", nullable = false)
   private CompanyEntity company;
