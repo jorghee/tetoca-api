@@ -1,4 +1,4 @@
-package com.tetoca.tetoca_api.models.company.turn;
+package com.tetoca.tetoca_api.models.company;
 
 import jakarta.persistence.*;
 import lombok.*;

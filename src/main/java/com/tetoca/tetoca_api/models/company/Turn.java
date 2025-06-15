@@ -1,7 +1,4 @@
-package com.tetoca.tetoca_api.models.company.turn;
-
-import com.tetoca.tetoca_api.models.company.Operator;
-import com.tetoca.tetoca_api.models.company.queue.QueueRegistration;
+package com.tetoca.tetoca_api.models.company;
 
 import jakarta.persistence.*;
 import lombok.*;

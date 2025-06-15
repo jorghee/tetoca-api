@@ -1,6 +1,5 @@
-package com.tetoca.tetoca_api.models.company.queue;
+package com.tetoca.tetoca_api.models.company;
 
-import com.tetoca.tetoca_api.models.company.Agency;
 
 import jakarta.persistence.*;
 import lombok.*;
