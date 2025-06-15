@@ -3,19 +3,17 @@ package com.tetoca.tetoca_api.multitenant.config;
 import com.tetoca.tetoca_api.multitenant.datasource.TenantDataSourceProvider;
 import com.tetoca.tetoca_api.multitenant.datasource.TenantRoutingDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 @Configuration
 @EnableJpaRepositories(
@@ -28,9 +26,6 @@ public class TenantDataSourceConfig {
   @Autowired
   private TenantDataSourceProvider tenantDataSourceProvider;
 
-  @Autowired
-  private Environment env;
-
   @Bean(name = "tenantDataSource")
   @DependsOn({"globalEntityManagerFactory", "globalTransactionManager"})
   public DataSource tenantDataSource() {
@@ -38,23 +33,32 @@ public class TenantDataSourceConfig {
   }
 
   @Bean(name = "tenantEntityManagerFactory")
-  public LocalContainerEntityManagerFactoryBean tenantEntityManagerFactory(EntityManagerFactoryBuilder builder) {
-    Map<String, Object> jpaProperties = new HashMap<>();
+  public LocalContainerEntityManagerFactoryBean tenantEntityManagerFactory(
+      @Qualifier("tenantDataSource") DataSource dataSource,
+      Environment env) {
+
+    LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+    factory.setDataSource(dataSource);
+    factory.setPackagesToScan("com.tetoca.tetoca_api.tenant.entity");
+    factory.setPersistenceUnitName("tenant");
+
+    HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+    factory.setJpaVendorAdapter(vendorAdapter);
+
+    Properties jpaProperties = new Properties();
     jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("spring.jpa.hibernate.ddl-auto"));
     jpaProperties.put("hibernate.dialect", env.getProperty("spring.jpa.properties.hibernate.dialect"));
     jpaProperties.put("hibernate.show_sql", env.getProperty("spring.jpa.show-sql"));
     jpaProperties.put("hibernate.format_sql", env.getProperty("spring.jpa.properties.hibernate.format_sql"));
+    factory.setJpaProperties(jpaProperties);
 
-    return builder
-      .dataSource(tenantDataSource())
-      .packages("com.tetoca.tetoca_api.tenant.entity")
-      .persistenceUnit("tenant")
-      .properties(jpaProperties)
-      .build();
+    return factory;
   }
 
   @Bean(name = "tenantTransactionManager")
-  public PlatformTransactionManager tenantTransactionManager(LocalContainerEntityManagerFactoryBean tenantEntityManagerFactory) {
-    return new JpaTransactionManager(tenantEntityManagerFactory.getObject());
+  public PlatformTransactionManager tenantTransactionManager(
+      @Qualifier("tenantEntityManagerFactory") LocalContainerEntityManagerFactoryBean factory) {
+
+    return new JpaTransactionManager(factory.getObject());
   }
 }
