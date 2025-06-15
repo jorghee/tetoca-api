@@ -37,6 +37,9 @@ public class InstanceEntity {
   @Column(name = "InsClaBd", nullable = false, length = 100)
   private String dbPassword;
 
+  @Column(name = "InsTenId", nullable = false, unique = true, length = 50)
+  private String tenantId;
+
   @Column(name = "InsFecAct")
   private Integer lastActivationDate;
 

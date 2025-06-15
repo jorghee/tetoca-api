@@ -49,7 +49,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
   }
 
   private DataSource createDataSourceForTenant(String tenantIdentifier) {
-    InstanceEntity instance = instanceRepository.findByCompanyNameIgnoreCase(tenantIdentifier)
+    InstanceEntity instance = instanceRepository.findByTenantIdIgnoreCase(tenantIdentifier)
       .orElseThrow(() -> new RuntimeException("Tenant not found: " + tenantIdentifier));
 
     HikariConfig config = new HikariConfig();

@@ -10,6 +10,8 @@ import java.util.Optional;
 @Repository
 public interface InstanceRepository extends JpaRepository<InstanceEntity, Long> {
 
+  Optional<InstanceEntity> findByTenantIdIgnoreCase(String tenantId);
+
   Optional<InstanceEntity> findByCompanyNameIgnoreCase(String name);
 
   Optional<InstanceEntity> findByCompanyRuc(String ruc);
