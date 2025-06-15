@@ -44,8 +44,8 @@ public class CompanyRegistrationService {
 
     // Create company
     CompanyEntity company = CompanyEntity.builder()
-      .status(companyState)
-      .category(category)
+      .companyState(companyState)
+      .companyCategory(category)
       .name(request.getName())
       .ruc(request.getRuc())
       .email(request.getEmail())
