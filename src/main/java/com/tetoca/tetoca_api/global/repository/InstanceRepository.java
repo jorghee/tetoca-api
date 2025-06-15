@@ -1,9 +1,10 @@
 package com.tetoca.tetoca_api.global.repository;
 
-import com.tetoca.tetoca_api.global.entity.InstanceEntity;
-import com.tetoca.tetoca_api.global.entity.CompanyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.tetoca.tetoca_api.global.models.CompanyEntity;
+import com.tetoca.tetoca_api.global.models.InstanceEntity;
 
 import java.util.Optional;
 

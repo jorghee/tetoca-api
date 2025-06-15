@@ -1,4 +1,4 @@
-package com.tetoca.tetoca_api.global.entity;
+package com.tetoca.tetoca_api.global.models;
 
 import jakarta.persistence.*;
 import lombok.*;

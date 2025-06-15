@@ -1,6 +1,6 @@
 package com.tetoca.tetoca_api.multitenant.datasource;
 
-import com.tetoca.tetoca_api.global.entity.InstanceEntity;
+import com.tetoca.tetoca_api.global.models.InstanceEntity;
 import com.tetoca.tetoca_api.global.repository.InstanceRepository;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
