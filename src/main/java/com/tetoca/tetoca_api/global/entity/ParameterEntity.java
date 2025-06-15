@@ -29,6 +29,7 @@ public class ParameterEntity {
   @Column(name = "ParFecAct", nullable = false)
   private Integer updateDate;
 
+  @Builder.Default
   @Column(name = "ParEstReg", nullable = false, length = 1)
   private String recordStatus = "A";
 }

@@ -32,6 +32,7 @@ public class AuditEntity {
   @Column(name = "AudObs", length = 255)
   private String observation;
 
+  @Builder.Default
   @Column(name = "AudEstReg", nullable = false, length = 1)
   private String recordStatus = "A";
 }

@@ -43,6 +43,7 @@ public class InstanceEntity {
   @Column(name = "InsFecAct")
   private Integer lastActivationDate;
 
+  @Builder.Default
   @Column(name = "InsEstReg", nullable = false, length = 1)
   private String recordStatus = "A"; 
 }

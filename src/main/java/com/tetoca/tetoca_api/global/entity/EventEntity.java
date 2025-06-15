@@ -33,6 +33,7 @@ public class EventEntity {
   @Column(name = "EveUsuAdm", length = 50)
   private String adminUser;
 
+  @Builder.Default
   @Column(name = "EveEstReg", nullable = false, length = 1)
   private String recordStatus = "A";
 }
