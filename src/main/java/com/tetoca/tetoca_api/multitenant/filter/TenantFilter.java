@@ -13,7 +13,7 @@ import java.util.Set;
 @Component
 public class TenantFilter implements Filter {
 
-  private static final String TENANT_PREFIX = "/tenant/";
+  private static final String TENANT_PREFIX = "/api/tenant/";
   private final Set<String> IGNORED_PATHS;
 
   public TenantFilter(@Value("${multitenant.ignored-paths}") Set<String> ignoredPaths) {
