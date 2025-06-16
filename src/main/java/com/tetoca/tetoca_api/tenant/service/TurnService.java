@@ -1,8 +1,9 @@
 package com.tetoca.tetoca_api.tenant.service;
 
 import com.tetoca.tetoca_api.tenant.dto.TicketResponse;
-import com.tetoca.tetoca_api.tenant.models.*;
-import com.tetoca.tetoca_api.tenant.repositories.*;
+import com.tetoca.tetoca_api.tenant.model.*;
+import com.tetoca.tetoca_api.tenant.repository.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

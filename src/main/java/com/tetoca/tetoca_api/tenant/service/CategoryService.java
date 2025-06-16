@@ -1,8 +1,9 @@
 package com.tetoca.tetoca_api.tenant.service;
 
 import com.tetoca.tetoca_api.tenant.dto.CategoryResponse;
-import com.tetoca.tetoca_api.tenant.models.Division;
-import com.tetoca.tetoca_api.tenant.repositories.DivisionRepository;
+import com.tetoca.tetoca_api.tenant.model.Division;
+import com.tetoca.tetoca_api.tenant.repository.DivisionRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

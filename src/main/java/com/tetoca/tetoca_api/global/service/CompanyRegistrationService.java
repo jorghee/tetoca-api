@@ -1,7 +1,7 @@
 package com.tetoca.tetoca_api.global.service;
 
 import com.tetoca.tetoca_api.global.dto.company.CompanyRegisterRequest;
-import com.tetoca.tetoca_api.global.models.*;
+import com.tetoca.tetoca_api.global.model.*;
 import com.tetoca.tetoca_api.global.repository.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

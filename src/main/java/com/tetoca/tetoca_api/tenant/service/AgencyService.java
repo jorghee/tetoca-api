@@ -2,8 +2,9 @@ package com.tetoca.tetoca_api.tenant.service;
 
 import com.tetoca.tetoca_api.tenant.dto.EnterpriseResponse;
 import com.tetoca.tetoca_api.tenant.dto.QueueResponse;
-import com.tetoca.tetoca_api.tenant.models.Agency;
-import com.tetoca.tetoca_api.tenant.repositories.AgencyRepository;
+import com.tetoca.tetoca_api.tenant.model.Agency;
+import com.tetoca.tetoca_api.tenant.repository.AgencyRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

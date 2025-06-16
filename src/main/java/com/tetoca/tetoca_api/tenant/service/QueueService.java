@@ -2,9 +2,10 @@ package com.tetoca.tetoca_api.tenant.service;
 
 import com.tetoca.tetoca_api.tenant.dto.EnterpriseResponse;
 import com.tetoca.tetoca_api.tenant.dto.QueueResponse;
-import com.tetoca.tetoca_api.tenant.models.Queue;
-import com.tetoca.tetoca_api.tenant.models.Turn;
-import com.tetoca.tetoca_api.tenant.repositories.QueueRepository;
+import com.tetoca.tetoca_api.tenant.model.Queue;
+import com.tetoca.tetoca_api.tenant.model.Turn;
+import com.tetoca.tetoca_api.tenant.repository.QueueRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
