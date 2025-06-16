@@ -1,4 +1,4 @@
-package com.tetoca.tetoca_api.tenant.controller;
+package com.tetoca.tetoca_api.multitenant.tenant.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
