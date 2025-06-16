@@ -14,12 +14,12 @@ public class FcmToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TokCodTok")
+    @Column(name = "TokCod")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TokCodCli", nullable = false)
-    private Client client;
+    @JoinColumn(name = "TokCliEmpCod", nullable = false)
+    private CompanyClient client;
 
     @Column(name = "TokVal", nullable = false, length = 255)
     private String token;

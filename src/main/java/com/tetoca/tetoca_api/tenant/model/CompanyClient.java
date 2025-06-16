@@ -10,25 +10,25 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Client {
+public class CompanyClient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CliCod")
+    @Column(name = "CliEmpCod")
     private Integer id;
 
-    @Column(name = "CliUidExt", length = 100)
+    @Column(name = "CliEmpUidExt", length = 100)
     private String externalUid;
 
-    @Column(name = "CliNom", nullable = false, length = 100)
+    @Column(name = "CliEmpNom", nullable = false, length = 100)
     private String fullName;
 
-    @Column(name = "CliCorEle", length = 100)
+    @Column(name = "CliEmpCorEle", length = 100)
     private String email;
 
-    @Column(name = "CliFecReg")
+    @Column(name = "CliEmpFecReg")
     private Integer registrationDate;
 
-    @Column(name = "CliEstReg", nullable = false, length = 1)
+    @Column(name = "CliEmpEstReg", nullable = false, length = 1)
     private String recordStatus = "A";
 }

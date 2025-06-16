@@ -21,7 +21,7 @@ public class TurnService {
     private final TurnRepository turnRepository;
     private final QueueRepository queueRepository;
     private final QueueRegistrationRepository queueRegistrationRepository;
-    private final ClientRepository clientRepository;
+    private final CompanyClientRepository clientRepository;
     private final TurnStatusRepository turnStatusRepository;
     
     @Transactional
@@ -34,12 +34,12 @@ public class TurnService {
             throw new RuntimeException("No se puede unir a esta cola. La cola no está activa o la empresa no está disponible");
         }
         
-        Client client = null;
+        CompanyClient client = null;
         if (clientId != null) {
             client = clientRepository.findById(clientId).orElse(null);
             
             // Verificar si el cliente ya tiene un turno activo en esta cola
-            boolean hasActiveTicket = turnRepository.findActiveTurnsByClientId(clientId)
+            boolean hasActiveTicket = turnRepository.findActiveTurnsByCompanyClientId(clientId)
                     .stream()
                     .anyMatch(turn -> turn.getQueueRegistration().getQueue().getId().equals(queueId));
             
@@ -52,7 +52,7 @@ public class TurnService {
         Long currentTime = Instant.now().toEpochMilli();
         QueueRegistration queueRegistration = new QueueRegistration();
         queueRegistration.setQueue(queue);
-        queueRegistration.setClient(client);
+        queueRegistration.setCompanyClient(client);
         queueRegistration.setRegistrationDateTime(currentTime);
         queueRegistration.setRegistrationMethod("APP");
         queueRegistration.setRecordStatus("A");

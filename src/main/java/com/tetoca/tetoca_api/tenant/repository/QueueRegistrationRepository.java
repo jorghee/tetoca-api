@@ -3,7 +3,7 @@ package com.tetoca.tetoca_api.tenant.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.tetoca.tetoca_api.tenant.model.Client;
+import com.tetoca.tetoca_api.tenant.model.CompanyClient;
 import com.tetoca.tetoca_api.tenant.model.Queue;
 import com.tetoca.tetoca_api.tenant.model.QueueRegistration;
 
@@ -14,9 +14,9 @@ public interface QueueRegistrationRepository extends JpaRepository<QueueRegistra
     
     List<QueueRegistration> findByQueue(Queue queue);
     
-    List<QueueRegistration> findByClient(Client client);
+    List<QueueRegistration> findByCompanyClient(CompanyClient client);
     
-    List<QueueRegistration> findByQueueAndClient(Queue queue, Client client);
+    List<QueueRegistration> findByQueueAndCompanyClient(Queue queue, CompanyClient client);
     
     List<QueueRegistration> findByRegistrationDateTimeBetween(Long startDateTime, Long endDateTime);
     

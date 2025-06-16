@@ -23,8 +23,8 @@ public class QueueRegistration {
     private Queue queue;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RegColCliCod", nullable = false)
-    private Client client;
+    @JoinColumn(name = "RegColCliEmpCod", nullable = false)
+    private CompanyClient companyClient;
 
     @Column(name = "RegColFecHor", nullable = false)
     private Long registrationDateTime;

@@ -49,7 +49,7 @@ public interface TurnRepository extends JpaRepository<Turn, Long> {
     // Turnos activos de un cliente
     @Query("SELECT t FROM Turn t WHERE t.queueRegistration.client.id = :clientId AND " +
            "t.turnStatus.name IN ('WAITING', 'PAUSED') AND t.recordStatus = 'A'")
-    List<Turn> findActiveTurnsByClientId(@Param("clientId") Integer clientId);
+    List<Turn> findActiveTurnsByCompanyClientId(@Param("clientId") Integer clientId);
     
     // Turnos en espera por cola
     @Query("SELECT t FROM Turn t WHERE t.queueRegistration.queue.id = :queueId AND " +
