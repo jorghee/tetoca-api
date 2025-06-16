@@ -46,7 +46,7 @@ public class GlobalDataSourceConfig {
 
     LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
     factory.setDataSource(dataSource);
-    factory.setPackagesToScan("com.tetoca.tetoca_api.global.entity");
+    factory.setPackagesToScan("com.tetoca.tetoca_api.global.models");
     factory.setPersistenceUnitName("global");
 
     HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
