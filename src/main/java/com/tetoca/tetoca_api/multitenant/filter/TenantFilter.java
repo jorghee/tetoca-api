@@ -55,6 +55,6 @@ public class TenantFilter implements Filter {
       int slashIndex = withoutPrefix.indexOf('/');
       return (slashIndex != -1) ? withoutPrefix.substring(0, slashIndex) : withoutPrefix;
     }
-    return null;
+    return "default";
   }
 }

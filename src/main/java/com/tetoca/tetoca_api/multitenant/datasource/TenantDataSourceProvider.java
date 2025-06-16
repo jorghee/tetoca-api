@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -19,6 +20,9 @@ public class TenantDataSourceProvider {
 
   @Autowired
   private ApplicationContext applicationContext;
+
+  @Autowired
+  private Environment env;
 
   // Thread-safe storage of tenant-specific DataSources
   private final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
@@ -68,10 +72,15 @@ public class TenantDataSourceProvider {
     return ds;
   }
 
-  private DataSource createDefaultDataSource() {
-    // This should probably connect to a default database or throw an exception
-    // For now, we'll throw an exception to make it explicit that no default is configured
-    throw new IllegalStateException("No default tenant configured. Please provide a valid tenant ID.");
+  public DataSource createDefaultDataSource() {
+    HikariConfig config = new HikariConfig();
+    config.setJdbcUrl(env.getProperty("spring.datasource.url"));
+    config.setUsername(env.getProperty("spring.datasource.username"));
+    config.setPassword(env.getProperty("spring.datasource.password"));
+    config.setDriverClassName("org.postgresql.Driver");
+    config.setPoolName("DefaultTenantDataSource");
+
+    return new HikariDataSource(config);
   }
 
   public void addTenant(String tenantId) {

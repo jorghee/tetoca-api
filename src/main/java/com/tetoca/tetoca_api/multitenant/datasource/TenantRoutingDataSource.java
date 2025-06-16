@@ -25,7 +25,7 @@ public class TenantRoutingDataSource extends AbstractRoutingDataSource {
     String tenantId = (String) determineCurrentLookupKey();
 
     if (tenantId == null || tenantId.isBlank()) {
-      throw new IllegalStateException("No tenant ID set in TenantContextHolder");
+      tenantId = "default";
     }
 
     return tenantDataSourceProvider.getDataSource(tenantId);
