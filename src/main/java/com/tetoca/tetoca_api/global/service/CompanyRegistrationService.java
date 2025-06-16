@@ -84,7 +84,7 @@ public class CompanyRegistrationService {
     Object exists = entityManager
       .createNativeQuery(sql)
       .setParameter("dbName", dbName)
-      .getSingleResult();
+      .getResultList();
 
     if (exists == null) {
       entityManager.createNativeQuery("CREATE DATABASE " + dbName).executeUpdate();
