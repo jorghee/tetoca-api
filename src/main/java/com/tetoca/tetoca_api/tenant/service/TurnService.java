@@ -39,7 +39,7 @@ public class TurnService {
             client = clientRepository.findById(clientId).orElse(null);
             
             // Verificar si el cliente ya tiene un turno activo en esta cola
-            boolean hasActiveTicket = turnRepository.findActiveTurnsByCompanyClientId(clientId)
+            boolean hasActiveTicket = turnRepository.findActiveTurnsForClient(clientId)
                     .stream()
                     .anyMatch(turn -> turn.getQueueRegistration().getQueue().getId().equals(queueId));
             

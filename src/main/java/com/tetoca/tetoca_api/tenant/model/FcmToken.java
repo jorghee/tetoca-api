@@ -19,7 +19,7 @@ public class FcmToken {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TokCliEmpCod", nullable = false)
-    private CompanyClient client;
+    private CompanyClient companyClient;
 
     @Column(name = "TokVal", nullable = false, length = 255)
     private String token;
