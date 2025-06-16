@@ -39,7 +39,7 @@ public class TenantDataSourceConfig {
 
     LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
     factory.setDataSource(dataSource);
-    factory.setPackagesToScan("com.tetoca.tetoca_api.tenant.entity");
+    factory.setPackagesToScan("com.tetoca.tetoca_api.tenant.models");
     factory.setPersistenceUnitName("tenant");
 
     HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
