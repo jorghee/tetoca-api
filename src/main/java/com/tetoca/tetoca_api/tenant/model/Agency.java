@@ -12,24 +12,25 @@ import lombok.*;
 
 public class Agency {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "AgeCod")
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "AgeCod")
+  private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "AgeDivCod", nullable = false)
-    private Division division;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "AgeDivCod", nullable = false)
+  @ToString.Exclude
+  private Division division;
 
-    @Column(name = "AgeNom", nullable = false, length = 100)
-    private String name;
+  @Column(name = "AgeNom", nullable = false, length = 100)
+  private String name;
 
-    @Column(name = "AgeDir", length = 150)
-    private String address;
+  @Column(name = "AgeDir", length = 150)
+  private String address;
 
-    @Column(name = "AgeRef", length = 100)
-    private String reference;
+  @Column(name = "AgeRef", length = 100)
+  private String reference;
 
-    @Column(name = "AgeEstReg", nullable = false, length = 1)
-    private String recordStatus = "A";
+  @Column(name = "AgeEstReg", nullable = false, length = 1)
+  private String recordStatus = "A";
 }
