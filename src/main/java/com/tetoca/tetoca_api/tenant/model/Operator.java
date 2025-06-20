@@ -12,19 +12,16 @@ import lombok.*;
 
 public class Operator {
 
-    @Id
-    @Column(name = "OpeTraCod")
-    private Integer workerId;
+  @Id
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "OpeTraCod")
+  @MapsId
+  private Worker worker;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "OpeTraCod")
-    @MapsId
-    private Worker worker;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "OpeAgeCod", nullable = false)
+  private Agency agency;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "OpeAgeCod", nullable = false)
-    private Agency agency;
-
-    @Column(name = "OpeEstReg", nullable = false, length = 1)
-    private String recordStatus = "A";
+  @Column(name = "OpeEstReg", nullable = false, length = 1)
+  private String recordStatus = "A";
 }
