@@ -9,19 +9,18 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class QueueStatus {
 
-    @Id
-    @Column(name = "EstColCod")
-    private Integer id;
+  @Id
+  @Column(name = "EstColCod")
+  private Integer id;
 
-    @Column(name = "EstColNom", nullable = false, length = 50)
-    private String name;
+  @Column(name = "EstColNom", nullable = false, length = 50)
+  private String name;
 
-    @Column(name = "EstColDes", length = 255)
-    private String description;
+  @Column(name = "EstColDes", length = 255)
+  private String description;
 
-    @Column(name = "EstColEstReg", nullable = false, length = 1)
-    private String recordStatus = "A";
+  @Column(name = "EstColEstReg", nullable = false, length = 1)
+  private String recordStatus = "A";
 }

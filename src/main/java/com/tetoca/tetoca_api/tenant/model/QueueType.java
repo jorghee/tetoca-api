@@ -9,19 +9,18 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class QueueType {
 
-    @Id
-    @Column(name = "TipColCod")
-    private Integer id;
+  @Id
+  @Column(name = "TipColCod")
+  private Integer id;
 
-    @Column(name = "TipColNom", nullable = false, length = 50)
-    private String name;
+  @Column(name = "TipColNom", nullable = false, length = 50)
+  private String name;
 
-    @Column(name = "TipColDes", length = 255)
-    private String description;
+  @Column(name = "TipColDes", length = 255)
+  private String description;
 
-    @Column(name = "TipColEstReg", nullable = false, length = 1)
-    private String recordStatus = "A";
+  @Column(name = "TipColEstReg", nullable = false, length = 1)
+  private String recordStatus = "A";
 }

@@ -9,32 +9,31 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class TurnEvent {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "EveTurCod")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "EveTurCod")
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EveTurTurCod", nullable = false)
-    private Turn turn;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "EveTurTurCod", nullable = false)
+  private Turn turn;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EveTurAntEstTurCod")
-    private TurnStatus previousStatus;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "EveTurAntEstTurCod")
+  private TurnStatus previousStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EveTurNueEstTurCod", nullable = false)
-    private TurnStatus newStatus;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "EveTurNueEstTurCod", nullable = false)
+  private TurnStatus newStatus;
 
-    @Column(name = "EveTurFecHor", nullable = false)
-    private Long eventDateTime;
+  @Column(name = "EveTurFecHor", nullable = false)
+  private Long eventDateTime;
 
-    @Column(name = "EveTurMot", length = 150)
-    private String reason;
+  @Column(name = "EveTurMot", length = 150)
+  private String reason;
 
-    @Column(name = "EveTurEstReg", nullable = false, length = 1)
-    private String recordStatus = "A";
+  @Column(name = "EveTurEstReg", nullable = false, length = 1)
+  private String recordStatus = "A";
 }

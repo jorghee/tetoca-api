@@ -9,24 +9,23 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class FcmToken {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TokCod")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "TokCod")
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TokCliEmpCod", nullable = false)
-    private CompanyClient companyClient;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "TokCliEmpCod", nullable = false)
+  private CompanyClient companyClient;
 
-    @Column(name = "TokVal", nullable = false, length = 255)
-    private String token;
+  @Column(name = "TokVal", nullable = false, length = 255)
+  private String token;
 
-    @Column(name = "TokFecReg", nullable = false)
-    private Long registrationDateTime;
+  @Column(name = "TokFecReg", nullable = false)
+  private Long registrationDateTime;
 
-    @Column(name = "TokEstReg", nullable = false, length = 1)
-    private String recordStatus = "A";
+  @Column(name = "TokEstReg", nullable = false, length = 1)
+  private String recordStatus = "A";
 }

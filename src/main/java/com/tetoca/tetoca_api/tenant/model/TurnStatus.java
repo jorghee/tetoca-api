@@ -9,19 +9,18 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class TurnStatus {
 
-    @Id
-    @Column(name = "EstTurCod")
-    private Integer id;
+  @Id
+  @Column(name = "EstTurCod")
+  private Integer id;
 
-    @Column(name = "EstTurNom", nullable = false, length = 50)
-    private String name;
+  @Column(name = "EstTurNom", nullable = false, length = 50)
+  private String name;
 
-    @Column(name = "EstTurDes", length = 255)
-    private String description;
+  @Column(name = "EstTurDes", length = 255)
+  private String description;
 
-    @Column(name = "EstTurEstReg", nullable = false, length = 1)
-    private String recordStatus = "A";
+  @Column(name = "EstTurEstReg", nullable = false, length = 1)
+  private String recordStatus = "A";
 }

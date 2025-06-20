@@ -9,19 +9,18 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class WorkerType {
 
-    @Id
-    @Column(name = "TipTraCod")
-    private Integer id;
+  @Id
+  @Column(name = "TipTraCod")
+  private Integer id;
 
-    @Column(name = "TipTraNom", nullable = false, length = 50)
-    private String name;
+  @Column(name = "TipTraNom", nullable = false, length = 50)
+  private String name;
 
-    @Column(name = "TipTraDes", length = 255)
-    private String description;
+  @Column(name = "TipTraDes", length = 255)
+  private String description;
 
-    @Column(name = "TipTraEstReg", nullable = false, length = 1)
-    private String recordStatus = "A";
+  @Column(name = "TipTraEstReg", nullable = false, length = 1)
+  private String recordStatus = "A";
 }

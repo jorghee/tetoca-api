@@ -12,17 +12,17 @@ import lombok.*;
 
 public class Division {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "DivCod")
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "DivCod")
+  private Integer id;
 
-    @Column(name = "DivNom", nullable = false, length = 100)
-    private String name;
+  @Column(name = "DivNom", nullable = false, length = 100)
+  private String name;
 
-    @Column(name = "DivDes", length = 255)
-    private String description;
+  @Column(name = "DivDes", length = 255)
+  private String description;
 
-    @Column(name = "DivEstReg", nullable = false, length = 1)
-    private String recordStatus = "A";
+  @Column(name = "DivEstReg", nullable = false, length = 1)
+  private String recordStatus = "A";
 }
