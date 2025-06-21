@@ -29,20 +29,16 @@ public class TenantFilter implements Filter {
       throws IOException, ServletException {
 
     HttpServletRequest httpRequest = (HttpServletRequest) request;
-    HttpServletResponse httpResponse = (HttpServletResponse) response;
     String path = httpRequest.getRequestURI();
 
+    String tenantId = DEFAULT_TENANT_ID;
     if (!shouldIgnore(path)) {
-      String tenantId = extractTenantIdFromPath(path);
-      if (tenantId == null || tenantId.isBlank()) {
-        httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, 
-            "Missing or invalid tenant identifier");
-        return;
-      }
-      TenantContextHolder.setTenantId(tenantId);
+      String extractedTenantId = extractTenantIdFromPath(path);
+      if (extractedTenantId != null) tenantId = extractedTenantId;
     }
 
     try {
+      TenantContextHolder.setTenantId(tenantId);
       chain.doFilter(request, response);
     } finally {
       TenantContextHolder.clear();
@@ -53,12 +49,19 @@ public class TenantFilter implements Filter {
     return IGNORED_PATHS.stream().anyMatch(path::startsWith);
   }
 
+  /**
+   * Extract the tenant ID of the URI
+   * @return the tenant ID if foundd, or null if not.
+   */
   private String extractTenantIdFromPath(String path) {
     if (path.startsWith(TENANT_PREFIX)) {
       String withoutPrefix = path.substring(TENANT_PREFIX.length());
+      if (withoutPrefix.isBlank()) return null;
+
       int slashIndex = withoutPrefix.indexOf('/');
-      return (slashIndex != -1) ? withoutPrefix.substring(0, slashIndex) : withoutPrefix;
+      String tenantId = (slashIndex != -1) ? withoutPrefix.substring(0, slashIndex) : withoutPrefix;
+      return tenantId.isBlank() ? null : tenantId;
     }
-    return DEFAULT_TENANT_ID;
+    return null;
   }
 }
