@@ -13,6 +13,7 @@ import java.util.Set;
 @Component
 public class TenantFilter implements Filter {
 
+  private static final String DEFAULT_TENANT_ID = "default";
   private final String TENANT_PREFIX;
   private final Set<String> IGNORED_PATHS;
 
@@ -58,6 +59,6 @@ public class TenantFilter implements Filter {
       int slashIndex = withoutPrefix.indexOf('/');
       return (slashIndex != -1) ? withoutPrefix.substring(0, slashIndex) : withoutPrefix;
     }
-    return "default";
+    return DEFAULT_TENANT_ID;
   }
 }
