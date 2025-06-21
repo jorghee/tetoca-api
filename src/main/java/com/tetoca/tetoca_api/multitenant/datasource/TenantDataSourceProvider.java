@@ -5,10 +5,9 @@ import com.tetoca.tetoca_api.global.repository.InstanceRepository;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -18,44 +17,57 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class TenantDataSourceProvider {
 
-  @Autowired
-  private ApplicationContext applicationContext;
-
-  @Autowired
-  private Environment env;
-
-  // Thread-safe storage of tenant-specific DataSources
+  private static final String DEFAULT_TENANT_KEY = "default";
   private final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
-  private volatile boolean initialized = false;
+  private final ApplicationContext applicationContext;
+  private final DataSource globalDataSource;
+
+  public TenantDataSourceProvider(
+      ApplicationContext applicationContext,
+      @Qualifier("globalDataSource") DataSource globalDataSource) {
+    this.applicationContext = applicationContext;
+    this.globalDataSource = globalDataSource;
+  }
 
   private InstanceRepository getInstanceRepository() {
     return applicationContext.getBean(InstanceRepository.class);
   }
 
   public DataSource getDataSource(String tenantId) {
-    if ("default".equals(tenantId)) return createDefaultDataSource();
-
-    return dataSources.computeIfAbsent(tenantId, this::loadDataSourceForTenant);
+    if (DEFAULT_TENANT_KEY.equals(tenantId)) return globalDataSource;
+    return dataSources.computeIfAbsent(tenantId, this::createAndCacheDataSource);
   }
 
-  public synchronized void loadInitialTenants() {
-    if (!initialized) {
-      try {
-        getInstanceRepository().findAll().forEach(this::createAndStoreDataSource);
-        initialized = true;
-      } catch (Exception e) {
-        System.err.println("Error loading initial tenants: {}" + e.getMessage());
-      }
+  public void addTenant(String tenantId) {
+    if (!dataSources.containsKey(tenantId)) {
+      log.info("Dynamically adding new tenant: {}", tenantId);
+      getDataSource(tenantId);
     }
   }
 
-  private DataSource loadDataSourceForTenant(String tenantId) {
-    InstanceEntity instance = getInstanceRepository().findByTenantIdIgnoreCase(tenantId)
-      .orElseThrow(() -> new RuntimeException("Tenant not found: " + tenantId));
-    return createAndStoreDataSource(instance);
+  public void removeTenant(String tenantId) {
+    DataSource ds = dataSources.remove(tenantId);
+    if (ds instanceof HikariDataSource) {
+      log.info("Closing connection pool for tenant: {}", tenantId);
+      ((HikariDataSource) ds).close();
+    }
   }
 
-  private DataSource createAndStoreDataSource(InstanceEntity instance) {
+  public void destroy() {
+    dataSources.values().forEach(ds -> {
+      if (ds instanceof HikariDataSource) {
+        ((HikariDataSource) ds).close();
+      }
+    });
+    dataSources.clear();
+  }
+
+  private DataSource createAndCacheDataSource(String tenantId) {
+    log.info("No DataSource found for tenant '{}'. Attempting to create a new one.", tenantId);
+
+    InstanceEntity instance = getInstanceRepository().findByTenantIdIgnoreCase(tenantId)
+      .orElseThrow(() -> new RuntimeException("Tenant not found and cannot create DataSource: " + tenantId));
+    
     HikariConfig config = new HikariConfig();
     config.setJdbcUrl(instance.getDbUri());
     config.setUsername(instance.getDbUser());
@@ -63,39 +75,11 @@ public class TenantDataSourceProvider {
     config.setDriverClassName("org.postgresql.Driver");
     config.setMaximumPoolSize(5);
     config.setMinimumIdle(1);
-    config.setIdleTimeout(300000);
-    config.setConnectionTimeout(30000);
-    config.setPoolName("Hikari-" + instance.getTenantId());
+    config.setIdleTimeout(300000); // 5min
+    config.setConnectionTimeout(30000); // 30s
+    config.setPoolName("HikariPool-" + instance.getTenantId());
 
-    HikariDataSource ds = new HikariDataSource(config);
-    dataSources.put(instance.getTenantId(), ds);
-    return ds;
-  }
-
-  public DataSource createDefaultDataSource() {
-    HikariConfig config = new HikariConfig();
-    config.setJdbcUrl(env.getProperty("spring.datasource.url"));
-    config.setUsername(env.getProperty("spring.datasource.username"));
-    config.setPassword(env.getProperty("spring.datasource.password"));
-    config.setDriverClassName("org.postgresql.Driver");
-    config.setPoolName("DefaultTenantDataSource");
-
+    log.info("DataSource created successfully for tenant '{}'", tenantId);
     return new HikariDataSource(config);
-  }
-
-  public void addTenant(String tenantId) {
-    if (!dataSources.containsKey(tenantId)) loadDataSourceForTenant(tenantId);
-  }
-
-  public void removeTenant(String tenantId) {
-    DataSource ds = dataSources.remove(tenantId);
-    if (ds instanceof HikariDataSource) ((HikariDataSource) ds).close();
-  }
-
-  public void destroy() {
-    dataSources.values().forEach(ds -> {
-      if (ds instanceof HikariDataSource) ((HikariDataSource) ds).close();
-    });
-    dataSources.clear();
   }
 }
