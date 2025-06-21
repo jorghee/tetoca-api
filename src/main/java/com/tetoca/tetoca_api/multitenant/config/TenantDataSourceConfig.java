@@ -2,8 +2,8 @@ package com.tetoca.tetoca_api.multitenant.config;
 
 import com.tetoca.tetoca_api.multitenant.datasource.TenantDataSourceProvider;
 import com.tetoca.tetoca_api.multitenant.datasource.TenantRoutingDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -23,12 +23,16 @@ import java.util.Properties;
 )
 public class TenantDataSourceConfig {
 
-  @Autowired
-  private TenantDataSourceProvider tenantDataSourceProvider;
+  @Bean
+  public TenantDataSourceProvider tenantDataSourceProvider(
+      ApplicationContext applicationContext,
+      @Qualifier("globalDataSource") DataSource globalDataSource) {
+    return new TenantDataSourceProvider(applicationContext, globalDataSource);
+  }
 
   @Bean(name = "tenantDataSource")
-  @DependsOn({"globalEntityManagerFactory", "globalTransactionManager"})
-  public DataSource tenantDataSource() {
+  @DependsOn("tenantDataSourceProvider")
+  public DataSource tenantDataSource(TenantDataSourceProvider tenantDataSourceProvider) {
     return new TenantRoutingDataSource(tenantDataSourceProvider);
   }
 

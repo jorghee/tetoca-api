@@ -17,17 +17,13 @@ public class TenantRoutingDataSource extends AbstractRoutingDataSource {
 
   @Override
   protected Object determineCurrentLookupKey() {
-    return TenantContextHolder.getTenantId();
+    String tenantId = TenantContextHolder.getTenantId();
+    return (tenantId != null) ? tenantId : "default";
   }
 
   @Override
   protected DataSource determineTargetDataSource() {
     String tenantId = (String) determineCurrentLookupKey();
-
-    if (tenantId == null || tenantId.isBlank()) {
-      tenantId = "default";
-    }
-
     return tenantDataSourceProvider.getDataSource(tenantId);
   }
 

@@ -1,12 +1,12 @@
 package com.tetoca.tetoca_api.global.service;
 
 import com.tetoca.tetoca_api.global.dto.company.CompanyRegisterRequest;
+import com.tetoca.tetoca_api.global.event.CompanyRegistrationEvent;
 import com.tetoca.tetoca_api.global.model.*;
 import com.tetoca.tetoca_api.global.repository.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,9 +22,7 @@ public class CompanyRegistrationService {
   private final CompanyCategoryRepository companyCategoryRepository;
   private final DatabaseTypeRepository databaseTypeRepository;
   private final ConnectionStateRepository connectionStateRepository;
-
-  @PersistenceContext
-  private EntityManager entityManager;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Transactional
   public void registerCompany(CompanyRegisterRequest request) {
@@ -71,23 +69,17 @@ public class CompanyRegistrationService {
 
     instanceRepository.save(instance);
 
-    // Create phisical database if not exists
-    createDatabaseIfNotExists(request.getDbName());
+    eventPublisher.publishEvent(new CompanyRegistrationEvent(
+      this,
+      request.getTenantId(),
+      request.getDbName(),
+      request.getDbUri(),
+      request.getDbUser(),
+      request.getDbPassword()
+    ));
   }
 
   private Integer getTodayDateInt() {
     return Integer.parseInt(LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE));
-  }
-
-  private void createDatabaseIfNotExists(String dbName) {
-    String sql = "SELECT 1 FROM pg_database WHERE datname = :dbName";
-    Object exists = entityManager
-      .createNativeQuery(sql)
-      .setParameter("dbName", dbName)
-      .getResultList();
-
-    if (exists == null) {
-      entityManager.createNativeQuery("CREATE DATABASE " + dbName).executeUpdate();
-    }
   }
 }

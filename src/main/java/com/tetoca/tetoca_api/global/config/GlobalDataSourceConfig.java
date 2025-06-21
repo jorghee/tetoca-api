@@ -22,7 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 )
 public class GlobalDataSourceConfig {
 
-  @Bean(name = "dataSource")
+  @Bean(name = "globalDataSource")
   @Primary
   public DataSource globalDataSource(
     @Value("${spring.datasource.url}") String url,
@@ -41,11 +41,11 @@ public class GlobalDataSourceConfig {
   @Primary
   @Bean(name = "globalEntityManagerFactory")
   public LocalContainerEntityManagerFactoryBean globalEntityManagerFactory(
-      @Qualifier("dataSource") DataSource dataSource,
+      @Qualifier("globalDataSource") DataSource globalDataSource,
       Environment env) {
 
     LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-    factory.setDataSource(dataSource);
+    factory.setDataSource(globalDataSource);
     factory.setPackagesToScan("com.tetoca.tetoca_api.global.model");
     factory.setPersistenceUnitName("global");
 

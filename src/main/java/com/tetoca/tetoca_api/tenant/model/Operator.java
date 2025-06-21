@@ -13,9 +13,12 @@ import lombok.*;
 public class Operator {
 
   @Id
+  @Column(name = "OpeTraCod")
+  private Integer workerId;
+
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "OpeTraCod")
   @MapsId
+  @JoinColumn(name = "OpeTraCod")
   private Worker worker;
 
   @ManyToOne(fetch = FetchType.LAZY)
