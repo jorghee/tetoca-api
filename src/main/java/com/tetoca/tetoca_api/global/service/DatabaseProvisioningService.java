@@ -1,4 +1,4 @@
-package com.tetoca.tetoca_api.multitenant.service;
+package com.tetoca.tetoca_api.global.service;
 
 import com.tetoca.tetoca_api.global.event.CompanyRegistrationEvent;
 import com.zaxxer.hikari.HikariDataSource;
