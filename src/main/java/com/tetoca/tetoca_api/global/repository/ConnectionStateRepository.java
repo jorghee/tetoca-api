@@ -3,7 +3,7 @@ package com.tetoca.tetoca_api.global.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.tetoca.tetoca_api.global.model.ConnectionStateEntity;
+import com.tetoca.tetoca_api.global.model.ConnectionState;
 
 @Repository
-public interface ConnectionStateRepository extends JpaRepository<ConnectionStateEntity, Integer> {}
+public interface ConnectionStateRepository extends JpaRepository<ConnectionState, Integer> {}

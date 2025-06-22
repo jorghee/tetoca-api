@@ -3,7 +3,7 @@ package com.tetoca.tetoca_api.global.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.tetoca.tetoca_api.global.model.AuditEntity;
+import com.tetoca.tetoca_api.global.model.Audit;
 
 @Repository
-public interface AuditRepository extends JpaRepository<AuditEntity, Integer> {}
+public interface AuditRepository extends JpaRepository<Audit, Integer> {}
