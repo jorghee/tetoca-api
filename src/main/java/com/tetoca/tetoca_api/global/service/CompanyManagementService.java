@@ -38,7 +38,7 @@ public class CompanyManagementService {
   private static final String STATUS_DELETED = "*";
 
   @Transactional
-  public void registerCompany(CompanyRegistrationRequest request) {
+  public CompanyResponse registerCompany(CompanyRegistrationRequest request) {
     CompanyRequest companyRequest = request.getCompany();
     InstanceRequest instanceRequest = request.getInstance();
 
