@@ -7,6 +7,7 @@ import lombok.*;
 @Table(name = "G2M_INSTANCIA")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Instance {

@@ -7,6 +7,7 @@ import lombok.*;
 @Table(name = "G1M_EMPRESA")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Company {
