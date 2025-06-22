@@ -1,7 +1,7 @@
 package com.tetoca.tetoca_api.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tetoca.tetoca_api.global.model.ClientEntity;
+import com.tetoca.tetoca_api.global.model.Client;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,7 +33,7 @@ public class ClientDetailsImpl implements UserDetails {
     this.authorities = authorities;
   }
 
-  public static ClientDetailsImpl build(ClientEntity client) {
+  public static ClientDetailsImpl build(Client client) {
     List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_CLIENT"));
 
     return new ClientDetailsImpl(
