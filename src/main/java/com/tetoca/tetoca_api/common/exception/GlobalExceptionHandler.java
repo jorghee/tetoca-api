@@ -14,6 +14,20 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(ResourceNotFoundException.class)
+  public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("error", ex.getMessage());
+    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(ResourceAlreadyExistsException.class)
+  public ResponseEntity<Map<String, String>> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("error", ex.getMessage());
+    return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+  }
+
   // Manejador para excepciones de validación de DTOs (@Valid)
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorDetails> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
