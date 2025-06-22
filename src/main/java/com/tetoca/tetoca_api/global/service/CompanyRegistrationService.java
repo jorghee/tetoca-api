@@ -28,20 +28,20 @@ public class CompanyRegistrationService {
   public void registerCompany(CompanyRegisterRequest request) {
 
     // Search references
-    CompanyStateEntity companyState = companyStateRepository.findById(request.getStatusCode())
+    CompanyState companyState = companyStateRepository.findById(request.getStatusCode())
       .orElseThrow(() -> new IllegalArgumentException("Invalid company state code"));
 
-    CompanyCategoryEntity category = companyCategoryRepository.findById(request.getCategoryCode())
+    CompanyCategory category = companyCategoryRepository.findById(request.getCategoryCode())
       .orElseThrow(() -> new IllegalArgumentException("Invalid category code"));
 
-    DatabaseTypeEntity dbType = databaseTypeRepository.findById(request.getDbTypeCode())
+    DatabaseType dbType = databaseTypeRepository.findById(request.getDbTypeCode())
       .orElseThrow(() -> new IllegalArgumentException("Invalid DB type code"));
 
-    ConnectionStateEntity connectionState = connectionStateRepository.findById(request.getConnectionStateCode())
+    ConnectionState connectionState = connectionStateRepository.findById(request.getConnectionStateCode())
       .orElseThrow(() -> new IllegalArgumentException("Invalid connection state code"));
 
     // Create company
-    CompanyEntity company = CompanyEntity.builder()
+    Company company = Company.builder()
       .companyState(companyState)
       .companyCategory(category)
       .name(request.getName())
@@ -54,7 +54,7 @@ public class CompanyRegistrationService {
     companyRepository.save(company);
 
     // Create instance
-    InstanceEntity instance = InstanceEntity.builder()
+    Instance instance = Instance.builder()
       .company(company)
       .connectionState(connectionState)
       .dbType(dbType)
