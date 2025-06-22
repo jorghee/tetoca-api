@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompanyCategoryEntity {
+public class CompanyCategory {
 
   @Id
   @Column(name = "CatEmpCod")

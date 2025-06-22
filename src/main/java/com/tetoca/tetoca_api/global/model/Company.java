@@ -9,8 +9,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class CompanyEntity {
+public class Company {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +22,7 @@ public class CompanyEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EmpCatEmpCod", nullable = false)
-  private CompanyCategoryEntity companyCategory;
+  private CompanyCategory companyCategory;
 
   @Column(name = "EmpNom", nullable = false, length = 100)
   private String name;
@@ -40,7 +39,6 @@ public class CompanyEntity {
   @Column(name = "EmpObs", length = 255)
   private String notes;
 
-  @Builder.Default
   @Column(name = "EmpEstReg", nullable = false, length = 1)
   private String recordStatus = "A";
 }

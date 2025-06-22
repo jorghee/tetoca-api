@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ParameterEntity {
+public class Parameter {
 
   @Id
   @Column(name = "ParCod")

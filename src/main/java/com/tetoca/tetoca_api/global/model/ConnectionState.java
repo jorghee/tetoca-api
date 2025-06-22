@@ -4,23 +4,23 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "GZZ_TIPO_PARAMETRO")
+@Table(name = "GZZ_ESTADO_CONEXION")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParameterTypeEntity {
+public class ConnectionState {
 
   @Id
-  @Column(name = "TipParCod")
+  @Column(name = "EstConCod")
   private Integer id;
 
-  @Column(name = "TipParNom", nullable = false, length = 30)
+  @Column(name = "EstConNom", nullable = false, length = 30)
   private String name;
 
-  @Column(name = "TipParDes", length = 100)
+  @Column(name = "EstConDes", length = 100)
   private String description;
 
-  @Column(name = "TipParEstReg", nullable = false, length = 1)
+  @Column(name = "EstConEstReg", nullable = false, length = 1)
   private String recordStatus = "A";
 }

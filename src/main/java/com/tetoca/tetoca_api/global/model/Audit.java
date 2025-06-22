@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuditEntity {
+public class Audit {
 
   @Id
   @Column(name = "AudCod")
@@ -18,7 +18,7 @@ public class AuditEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "AudTipAccCod", nullable = false)
-  private ActionTypeEntity actionType;
+  private ActionType actionType;
 
   @Column(name = "AudFecHor", nullable = false)
   private Long dateTime;

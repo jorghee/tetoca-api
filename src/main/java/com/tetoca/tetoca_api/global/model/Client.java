@@ -9,8 +9,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class ClientEntity {
+public class Client {
 
   @Id
   @Column(name = "CliCod")
@@ -34,7 +33,6 @@ public class ClientEntity {
   @Column(name = "CliFecReg", nullable = false)
   private Integer registerDate;
 
-  @Builder.Default
   @Column(name = "CliEstReg", nullable = false, length = 1)
   private String recordStatus = "A";
 }

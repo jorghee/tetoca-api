@@ -9,8 +9,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class EventEntity {
+public class Event {
 
   @Id
   @Column(name = "EveCod")
@@ -18,11 +17,11 @@ public class EventEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EveTipEveCod", nullable = false)
-  private EventTypeEntity eventType;
+  private EventType eventType;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EveEmpCod", nullable = false)
-  private CompanyEntity company;
+  private Company company;
 
   @Column(name = "EveFecHor", nullable = false)
   private Long dateTime;
@@ -33,7 +32,6 @@ public class EventEntity {
   @Column(name = "EveUsuAdm", length = 50)
   private String adminUser;
 
-  @Builder.Default
   @Column(name = "EveEstReg", nullable = false, length = 1)
   private String recordStatus = "A";
 }

@@ -4,23 +4,23 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "GZZ_TIPO_EVENTO")
+@Table(name = "GZZ_TIPO_DB")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventTypeEntity {
+public class DatabaseType {
 
   @Id
-  @Column(name = "TipEveCod")
+  @Column(name = "TipBdCod")
   private Integer id;
 
-  @Column(name = "TipEveNom", nullable = false, length = 30)
+  @Column(name = "TipBdNom", nullable = false, length = 30)
   private String name;
 
-  @Column(name = "TipEveDes", length = 100)
+  @Column(name = "TipBdDes", length = 100)
   private String description;
 
-  @Column(name = "TipEveEstReg", nullable = false, length = 1)
+  @Column(name = "TipBdEstReg", nullable = false, length = 1)
   private String recordStatus = "A";
 }
