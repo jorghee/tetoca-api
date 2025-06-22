@@ -30,6 +30,6 @@ public interface TurnRepository extends JpaRepository<Turn, Long> {
    * @param statusName El estado de los turnos a contar (ej. "EN_ESPERA").
    * @return El número de turnos por delante.
    */
-  long countByQueueRegistration_Queue_IdAndOrderNumberLessThanAndTurnStatus_Name(
+  long countByQueueRegistration_Queue_IdAndOrderNumberLessThanAndTurnStatus_NameAndRecordStatus(
       Integer queueId, Integer orderNumber, String statusName, String recordStatus);
 }
