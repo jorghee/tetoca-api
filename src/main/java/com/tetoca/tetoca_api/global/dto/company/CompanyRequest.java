@@ -11,7 +11,7 @@ import lombok.Data;
 @Builder
 public class CompanyRequest {
   @NotBlank(message = "El nombre de la empresa no puede estar vacío.")
-  @Size(max = 100)
+  @Size(max = 100, message = "El nombre no puede exceder los 100 caracteres.")
   private String name;
 
   @NotBlank(message = "El RUC no puede estar vacío.")
@@ -24,6 +24,4 @@ public class CompanyRequest {
 
   @NotNull(message = "El código de categoría es obligatorio.")
   private Integer categoryCode;
-
-  // No incluimos el estado, ya que debería ser gestionado internamente ('A' por defecto al crear).
 }

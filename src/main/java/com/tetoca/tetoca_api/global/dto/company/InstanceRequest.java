@@ -10,18 +10,19 @@ import lombok.Data;
 public class InstanceRequest {
 
   @NotBlank(message = "El tenantId no puede estar vacío.")
+  @Size(max = 50, message = "El tenantId no puede exceder los 50 caracteres.")
   private String tenantId;
 
   @NotBlank(message = "El nombre de la base de datos no puede estar vacío.")
   private String dbName;
   
-  @NotBlank
+  @NotBlank(message = "La URI de la base de datos no puede estar vacía.")
   private String dbUri;
 
-  @NotBlank
+  @NotBlank(message = "El usuario de la base de datos no puede estar vacío.")
   private String dbUser;
 
-  @NotBlank
+  @NotBlank(message = "La contraseña de la base de datos no puede estar vacía.")
   private String dbPassword;
 
   @NotNull(message = "El tipo de base de datos es obligatorio.")

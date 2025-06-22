@@ -8,10 +8,10 @@ import lombok.Data;
 public class CompanyRegistrationRequest {
 
   @Valid
-  @NotNull
+  @NotNull(message = "Los datos de la empresa son obligatorios.")
   private CompanyRequest company;
 
   @Valid
-  @NotNull
+  @NotNull(message = "Los datos de la instancia son obligatorios.")
   private InstanceRequest instance;
 }
