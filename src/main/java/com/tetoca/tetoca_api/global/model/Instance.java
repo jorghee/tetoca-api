@@ -9,25 +9,24 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class InstanceEntity {
+public class Instance {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "InsCod")
-  private Integer id;
+  @Column(name = "InsEmpCod")
+  private Integer companyId;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "InsEmpCod", nullable = false)
-  private CompanyEntity company;
+  @MapsId
+  @JoinColumn(name = "InsEmpCod")
+  private Company company;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "InsEstConCod", nullable = false)
-  private ConnectionStateEntity connectionState;
+  private ConnectionState connectionState;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "InsTipBdCod", nullable = false)
-  private DatabaseTypeEntity dbType;
+  private DatabaseType dbType;
 
   @Column(name = "InsNomBd", nullable = false, length = 50)
   private String dbName;
@@ -47,7 +46,6 @@ public class InstanceEntity {
   @Column(name = "InsFecAct")
   private Integer lastActivationDate;
 
-  @Builder.Default
   @Column(name = "InsEstReg", nullable = false, length = 1)
   private String recordStatus = "A"; 
 }

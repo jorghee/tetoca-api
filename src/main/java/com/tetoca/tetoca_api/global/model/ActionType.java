@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActionTypeEntity {
+public class ActionType {
 
   @Id
   @Column(name = "TipAccCod")
