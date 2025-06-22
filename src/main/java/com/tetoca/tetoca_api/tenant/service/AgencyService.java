@@ -29,7 +29,7 @@ public class AgencyService {
    * @return Una página de EnterpriseResponse.
    */
   @Transactional(readOnly = true)
-  public Page<EnterpriseResponse> getAllAgencies(int page, int limit) {
+  public Page<EnterpriseResponse> getAllActiveAgencies(int page, int limit) {
     Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, limit);
     return agencyRepository.findByRecordStatusOrderByName("A", pageable)
       .map(this::mapToEnterpriseResponse);
