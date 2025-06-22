@@ -16,27 +16,27 @@ import java.util.Optional;
 @Repository
 public interface AgencyRepository extends JpaRepository<Agency, Integer> {
     
-    Optional<Agency> findByName(String name);
-    
-    List<Agency> findByDivision(Division division);
-    
-    List<Agency> findByRecordStatus(String recordStatus);
-    
-    // Buscar agencias activas con paginación
-    Page<Agency> findByRecordStatusOrderByName(String recordStatus, Pageable pageable);
-    
-    List<Agency> findByDivisionAndRecordStatus(Division division, String recordStatus);
-    
-    List<Agency> findByNameContainingIgnoreCase(String name);
-    
-    // Buscar por texto con paginación
-    @Query("SELECT a FROM Agency a WHERE a.recordStatus = 'A' AND " +
-           "LOWER(a.name) LIKE LOWER(CONCAT('%', :searchText, '%'))")
-    Page<Agency> findBySearchTextAndActive(@Param("searchText") String searchText, Pageable pageable);
-    
-    // Contar colas activas por agencia
-    @Query("SELECT COUNT(q) FROM Queue q WHERE q.agency.id = :agencyId AND q.recordStatus = 'A'")
-    Integer countActiveQueuesByAgencyId(@Param("agencyId") Integer agencyId);
-    
-    boolean existsByNameAndDivision(String name, Division division);
+  Optional<Agency> findByName(String name);
+  
+  List<Agency> findByDivision(Division division);
+  
+  List<Agency> findByRecordStatus(String recordStatus);
+  
+  // Buscar agencias activas con paginación
+  Page<Agency> findByRecordStatusOrderByName(String recordStatus, Pageable pageable);
+  
+  List<Agency> findByDivisionAndRecordStatus(Division division, String recordStatus);
+  
+  List<Agency> findByNameContainingIgnoreCase(String name);
+  
+  // Buscar por texto con paginación
+  @Query("SELECT a FROM Agency a WHERE a.recordStatus = 'A' AND " +
+         "LOWER(a.name) LIKE LOWER(CONCAT('%', :searchText, '%'))")
+  Page<Agency> findBySearchTextAndActive(@Param("searchText") String searchText, Pageable pageable);
+  
+  // Contar colas activas por agencia
+  @Query("SELECT COUNT(q) FROM Queue q WHERE q.agency.id = :agencyId AND q.recordStatus = 'A'")
+  Integer countActiveQueuesByAgencyId(@Param("agencyId") Integer agencyId);
+  
+  boolean existsByNameAndDivision(String name, Division division);
 }
