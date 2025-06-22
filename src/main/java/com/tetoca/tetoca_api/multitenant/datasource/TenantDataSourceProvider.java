@@ -1,6 +1,6 @@
 package com.tetoca.tetoca_api.multitenant.datasource;
 
-import com.tetoca.tetoca_api.global.model.InstanceEntity;
+import com.tetoca.tetoca_api.global.model.Instance;
 import com.tetoca.tetoca_api.global.repository.InstanceRepository;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -65,7 +65,7 @@ public class TenantDataSourceProvider {
   private DataSource createAndCacheDataSource(String tenantId) {
     log.info("No DataSource found for tenant '{}'. Attempting to create a new one.", tenantId);
 
-    InstanceEntity instance = getInstanceRepository().findByTenantIdIgnoreCase(tenantId)
+    Instance instance = getInstanceRepository().findByTenantIdIgnoreCase(tenantId)
       .orElseThrow(() -> new RuntimeException("Tenant not found and cannot create DataSource: " + tenantId));
     
     HikariConfig config = new HikariConfig();

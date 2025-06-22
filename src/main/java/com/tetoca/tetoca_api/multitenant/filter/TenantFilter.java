@@ -3,7 +3,6 @@ package com.tetoca.tetoca_api.multitenant.filter;
 import com.tetoca.tetoca_api.multitenant.context.TenantContextHolder;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
