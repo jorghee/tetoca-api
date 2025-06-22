@@ -2,8 +2,6 @@ package com.tetoca.tetoca_api.global.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.tetoca.tetoca_api.global.model.Company;
 import com.tetoca.tetoca_api.global.model.Instance;
 
 import java.util.Optional;
@@ -13,9 +11,7 @@ public interface InstanceRepository extends JpaRepository<Instance, Long> {
 
   Optional<Instance> findByTenantIdIgnoreCase(String tenantId);
 
-  Optional<Instance> findByCompanyNameIgnoreCase(String name);
+  Optional<Instance> findByCompany_Id(Integer companyId);
 
-  Optional<Instance> findByCompanyRuc(String ruc);
-
-  Optional<Instance> findByCompany(Company company);
+  boolean existsByTenantIdIgnoreCase(String tenantId);
 }
