@@ -31,5 +31,5 @@ public interface TurnRepository extends JpaRepository<Turn, Long> {
    * @return El número de turnos por delante.
    */
   long countByQueueRegistration_Queue_IdAndOrderNumberLessThanAndTurnStatus_Name(
-      Integer queueId, Integer orderNumber, String statusName);
+      Integer queueId, Integer orderNumber, String statusName, String recordStatus);
 }
