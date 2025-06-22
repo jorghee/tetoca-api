@@ -18,7 +18,7 @@ public class Company {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EmpEstEmpCod", nullable = false)
-  private CompanyStateEntity companyState;
+  private CompanyState companyState;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EmpCatEmpCod", nullable = false)

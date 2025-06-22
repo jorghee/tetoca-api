@@ -18,7 +18,7 @@ public class Parameter {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "ParTipParCod", nullable = false)
-  private ParameterTypeEntity parameterType;
+  private ParameterType parameterType;
 
   @Column(name = "ParNom", nullable = false, length = 100)
   private String name;
