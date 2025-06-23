@@ -1,222 +1,334 @@
 ![](./.github/tetoca_cover.png)
 
-# :hammer: <samp>API REST TeToca SaaS</samp>
+# Documentación de Endpoints de la API Tetoca
 
-## Resumen endpoints (Admin SaaS)
+Esta documentación detalla todos los endpoints disponibles en la API REST 
+de Tetoca. La API está diseñada siguiendo un modelo multitenant, donde cada 
+empresa opera en un contexto aislado (`tenantId`).
 
-Estos endpoints están diseñados para ser consumidos por el **Administrador 
-de la Plataforma SaaS** y operan sobre la base de datos **Global**. Todos 
-ellos se encuentran bajo la ruta base `/api/admin/companies` y requieren 
-autenticación con el rol `SAAS_ADMIN`.
+## Autenticación y Autorización
 
-### 1. Registrar una Nueva Empresa
+La mayoría de los endpoints de la API están protegidos. Las solicitudes a 
+endpoints protegidos deben incluir una cabecera de autorización con un 
+JSON Web Token (JWT) válido.
 
-*   **Funcionalidad:** Este es el endpoint principal para dar de alta a un 
-nuevo cliente (tenant) en la plataforma. Crea el registro de la `Company` y 
-su `Instance` asociada en la base de datos global. De forma asíncrona, 
-dispara el evento que provisiona una nueva base de datos aislada y su 
-esquema para el nuevo tenant.
+`Authorization: Bearer <YOUR_JWT_HERE>`
 
-*   **Método HTTP:** `POST`
-*   **URL Completa:** `http://localhost:8080/api/admin/companies`
-*   **Cuerpo de la Solicitud (Request Body):**
+El token se obtiene a través de los endpoints de autenticación 
+correspondientes a cada actor.
 
+---
+
+## Endpoints de Autenticación (Públicos)
+
+Estos endpoints son la puerta de entrada para los diferentes actores de 
+la plataforma.
+
+### 1. Login de Administrador SaaS
+
+-   **Método HTTP:** `POST`
+-   **URL:** `/api/auth/admin/login`
+-   **Descripción:** Autentica a un Administrador SaaS usando email y 
+    contraseña, y devuelve un JWT con el rol `SAAS_ADMIN`.
+-   **Estado:** `Listo para Producción`
+-   **Request Body:**
+    ```json
+    {
+      "username": "admin@tetoca.com", // (String) Email del Admin SaaS.
+      "password": "a_strong_password" // (String) Contraseña del Admin SaaS.
+    }
+    ```
+-   **Response Body (200 OK):**
+    ```json
+    {
+      "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYWFzOmFkbWluQHRldG9jYS5jb20iLCJpYXQiOjE2NjkzMzIwNzgsImV4cCI6MTY2OTQxODQ3OH0.abc123xyz" // (String) JSON Web Token para usar en solicitudes posteriores.
+    }
+    ```
+
+### 2. Login de Trabajador (Tenant)
+
+-   **Método HTTP:** `POST`
+-   **URL:** `/api/auth/worker/login/{tenantId}`
+-   **Descripción:** Autentica a un trabajador (Admin Empresa, Operario, 
+    etc.) de una empresa específica. El `tenantId` en la URL es crucial para 
+    dirigir la autenticación a la base de datos correcta.
+-   **Estado:** `Listo para Producción`
+-   **Request Body:**
+    ```json
+    {
+      "username": "operario1@empresa.com", // (String) Email del trabajador.
+      "password": "worker_password"       // (String) Contraseña del trabajador.
+    }
+    ```
+-   **Response Body (200 OK):**
+    ```json
+    {
+      "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ3b3JrZXI6b3BlcmFyaW8xQGVtcHJlc2EuY29tIiwiaWF0IjoxNjY5MzMyMDc4LCJleHAiOjE2Njk0MTg0Nzh9.def456uvw" // (String) JWT con los roles dinámicos del trabajador.
+    }
+    ```
+
+### 3. Login/Registro de Cliente Final (OAuth)
+
+-   **Método HTTP:** `POST`
+-   **URL:** `/api/auth/client/oauth`
+-   **Descripción:** Permite a un cliente final iniciar sesión o registrarse 
+    usando un token de un proveedor OAuth (actualmente solo Google). El 
+    backend valida el token, crea o recupera el usuario en la base de datos 
+    Global y devuelve un JWT con el rol `CLIENT`.
+-   **Estado:** `Listo para Producción`
+-   **Request Body:**
+    ```json
+    {
+      "provider": "google",   // (String) Proveedor de OAuth. Por ahora, solo "google".
+      "token": "ey..."          // (String) El id_token proporcionado por el SDK de Google Sign-In.
+    }
+    ```
+-   **Response Body (200 OK):**
+    ```json
+    {
+      "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvYXV0aDpnb29nbGVfMTAxMjM0NTY3ODkwIiwiaWF0IjoxNjY5MzMyMDc4LCJleHAiOjE2Njk0MTg0Nzh9.ghi789pqr" // (String) JWT para el cliente final.
+    }
+    ```
+
+---
+
+## Endpoints del Administrador SaaS
+
+**Autorización:** Requiere un JWT con el rol `ROLE_SAAS_ADMIN`.
+
+### 1. Registrar Nueva Empresa
+
+-   **Método HTTP:** `POST`
+-   **URL:** `/api/admin/companies`
+-   **Descripción:** Crea una nueva empresa (tenant), su instancia de base 
+    de datos asociada y dispara el provisionamiento asíncrono de la nueva 
+    base de datos.
+-   **Estado:** `Listo para Producción`
+-   **Request Body:**
     ```json
     {
       "company": {
-        "name": "Tech Innovators S.A.C.",
-        "ruc": "20601234567",
-        "email": "contacto@techinnovators.com",
-        "categoryCode": 1
+        "name": "Innovate Solutions S.A.C.",  // (String) Nombre comercial de la empresa.
+        "ruc": "20609876543",                // (String) RUC de 11 dígitos.
+        "email": "contacto@innovate.com",    // (String) Email de contacto.
+        "categoryCode": 1                    // (Integer) ID de la categoría de la empresa.
       },
       "instance": {
-        "tenantId": "techinnovators",
-        "dbName": "db_techinnovators",
-        "dbUri": "jdbc:postgresql://localhost:5432/db_techinnovators",
-        "dbUser": "user_techinnovators",
-        "dbPassword": "a_very_secure_password",
-        "dbTypeCode": 1
+        "tenantId": "innovate",                 // (String) Identificador único para la URL.
+        "dbName": "db_innovate",                // (String) Nombre de la base de datos a crear.
+        "dbUri": "jdbc:postgresql://localhost:5432/db_innovate", // (String) URI de conexión.
+        "dbUser": "user_innovate",              // (String) Usuario para la nueva BD.
+        "dbPassword": "a_secure_password",      // (String) Contraseña para la nueva BD.
+        "dbTypeCode": 1                         // (Integer) ID del tipo de BD (e.g., PostgreSQL).
       }
     }
     ```
-
-*   **Respuesta de Ejemplo (Response `201 Created`):**
-
+-   **Response Body (201 Created):**
     ```json
     {
-      "id": 1,
-      "name": "Tech Innovators S.A.C.",
-      "ruc": "20601234567",
-      "email": "contacto@techinnovators.com",
-      "category": "Tecnología",
-      "state": "Activo",
-      "tenantId": "techinnovators",
-      "recordStatus": "A",
-      "registerDate": 20231027
+      "id": 3,                             // (Integer) ID único de la empresa.
+      "name": "Innovate Solutions S.A.C.", // (String) Nombre de la empresa.
+      "ruc": "20609876543",                // (String) RUC de la empresa.
+      "email": "contacto@innovate.com",    // (String) Email de la empresa.
+      "category": "Tecnología",            // (String) Nombre de la categoría.
+      "state": "Activo",                   // (String) Estado actual de la empresa.
+      "tenantId": "innovate",              // (String) Identificador del tenant.
+      "recordStatus": "A",                 // (String) Estado del registro (A: Activo).
+      "registerDate": 20231028             // (Integer) Fecha de registro en formato YYYYMMDD.
     }
     ```
-
----
 
 ### 2. Obtener Todas las Empresas
+-   **Método HTTP:** `GET`
+-   **URL:** `/api/admin/companies`
+-   **Descripción:** Devuelve una lista de todas las empresas registradas.
+-   **Estado:** `Listo para Producción`
+-   **Response Body (200 OK):** `(Un array de objetos CompanyResponse, 
+    como el del ejemplo anterior)`
 
-*   **Funcionalidad:** Devuelve una lista de todas las empresas registradas 
-en la plataforma que no han sido eliminadas lógicamente. Es ideal para que 
-el Administrador SaaS tenga un dashboard o una vista general de todos sus 
-clientes.
+### 3. Obtener Detalles de una Empresa
+-   **Método HTTP:** `GET`
+-   **URL:** `/api/admin/companies/{id}`
+-   **Descripción:** Devuelve la información de una empresa específica.
+-   **Estado:** `Listo para Producción`
+-   **Response Body (200 OK):** `(Un objeto CompanyResponse, como el del 
+    ejemplo anterior)`
 
-*   **Método HTTP:** `GET`
-*   **URL Completa:** `http://localhost:8080/api/admin/companies`
-*   **Cuerpo de la Solicitud (Request Body):** `N/A`
-
-*   **Respuesta de Ejemplo (Response `200 OK`):**
-
-    ```json
-    [
-      {
-        "id": 1,
-        "name": "Tech Innovators S.A.C.",
-        "ruc": "20601234567",
-        "email": "contacto@techinnovators.com",
-        "category": "Tecnología",
-        "state": "Activo",
-        "tenantId": "techinnovators",
-        "recordStatus": "A",
-        "registerDate": 20231027
-      },
-      {
-        "id": 2,
-        "name": "Soluciones Logísticas S.A.",
-        "ruc": "20509876543",
-        "email": "ventas@solucioneslogisticas.com",
-        "category": "Transporte",
-        "state": "Activo",
-        "tenantId": "solog",
-        "recordStatus": "A",
-        "registerDate": 20231026
-      }
-    ]
-    ```
-
----
-
-### 3. Obtener una Empresa por su ID
-
-*   **Funcionalidad:** Recupera la información detallada de una única 
-empresa, identificada por su ID numérico. Útil para ver los detalles de 
-un cliente específico.
-
-*   **Método HTTP:** `GET`
-*   **URL Completa:** `http://localhost:8080/api/admin/companies/1`
-*   **Cuerpo de la Solicitud (Request Body):** `N/A`
-
-*   **Respuesta de Ejemplo (Response `200 OK`):**
-
-    ```json
-    {
-      "id": 1,
-      "name": "Tech Innovators S.A.C.",
-      "ruc": "20601234567",
-      "email": "contacto@techinnovators.com",
-      "category": "Tecnología",
-      "state": "Activo",
-      "tenantId": "techinnovators",
-      "recordStatus": "A",
-      "registerDate": 20231027
-    }
-    ```
-
----
-
-### 4. Actualizar una Empresa Existente
-
-*   **Funcionalidad:** Permite modificar los datos generales de una 
-empresa (nombre, RUC, email, categoría). No permite cambiar los datos de 
-la instancia (como el `tenantId` o las credenciales de la base de datos), 
-ya que estas son operaciones más sensibles que podrían requerir un flujo 
-diferente.
-
-*   **Método HTTP:** `PUT`
-*   **URL Completa:** `http://localhost:8080/api/admin/companies/1`
-*   **Cuerpo de la Solicitud (Request Body):**
-
-    ```json
-    {
-      "name": "Tech Innovators Global",
-      "ruc": "20601234567",
-      "email": "ceo@techinnovators.com",
-      "categoryCode": 2
-    }
-    ```
-
-*   **Respuesta de Ejemplo (Response `200 OK`):**
-
-    ```json
-    {
-      "id": 1,
-      "name": "Tech Innovators Global",
-      "ruc": "20601234567",
-      "email": "ceo@techinnovators.com",
-      "category": "Consultoría",
-      "state": "Activo",
-      "tenantId": "techinnovators",
-      "recordStatus": "A",
-      "registerDate": 20231027
-    }
-    ```
-
----
+### 4. Actualizar una Empresa
+-   **Método HTTP:** `PUT`
+-   **URL:** `/api/admin/companies/{id}`
+-   **Descripción:** Actualiza los datos generales de una empresa.
+-   **Estado:** `Listo para Producción`
+-   **Request Body:** `(Objeto CompanyRequest, sin la sección "instance")`
+-   **Response Body (200 OK):** `(Devuelve el objeto CompanyResponse 
+    actualizado)`
 
 ### 5. Eliminar una Empresa (Lógicamente)
-
-*   **Funcionalidad:** Realiza una **eliminación lógica** de la empresa. En 
-lugar de borrar el registro de la base de datos, cambia su `recordStatus` 
-a `'*'` (Eliminado). Esto desactiva la empresa en la plataforma pero 
-mantiene los datos para fines de auditoría, métricas o una posible 
-reactivación futura.
-
-*   **Método HTTP:** `DELETE`
-*   **URL Completa:** `http://localhost:8080/api/admin/companies/1`
-*   **Cuerpo de la Solicitud (Request Body):** `N/A`
-
-*   **Respuesta de Ejemplo (Response `204 No Content`):**
-    *El servidor responde con un código de estado `204` y un cuerpo de 
-    respuesta vacío, indicando que la operación se realizó con éxito.*
+-   **Método HTTP:** `DELETE`
+-   **URL:** `/api/admin/companies/{id}`
+-   **Descripción:** Marca una empresa y su instancia como eliminadas.
+-   **Estado:** `Listo para Producción`
+-   **Response Body:** `(Vacío, con estado 204 No Content)`
 
 ---
 
-## Resumen endpoints (Cliente SaaS)
+## Endpoints del Usuario (Cliente Final)
 
-## Resumen endpoints (Admin Empresa)
+### Vistas Públicas (No requieren autenticación)
 
-## Resumen endpoints (Admin División)
+#### 1. Listar Agencias (Empresas del Tenant)
+-   **Método HTTP:** `GET`
+-   **URL:** `/api/tenant/{tenantId}/public/agencies`
+-   **Descripción:** Devuelve una lista paginada de todas las agencias 
+    activas de un tenant.
+-   **Estado:** `Listo para Producción`
+-   **Response Body (200 OK):**
+    ```json
+    {
+      "content": [
+        {
+          "id": "1",                           // (String) ID de la agencia.
+          "name": "Agencia Principal Centro",  // (String) Nombre de la agencia.
+          "shortName": "APC",                  // (String) Nombre corto autogenerado.
+          "type": "Agencia",                   // (String) Tipo de entidad.
+          "logo": null,                        // (String) URL del logo.
+          "address": "Av. Central 123",        // (String) Dirección de la agencia.
+          "schedule": null,                    // (String) Horario de atención.
+          "phone": null,                       // (String) Teléfono de contacto.
+          "isAvailable": true,                 // (Boolean) Indica si la agencia está activa.
+          "activeQueues": 3,                   // (Integer) Número de colas activas.
+          "queues": null                       // (Array) Lista de colas (solo en el endpoint de detalle).
+        }
+      ],
+      "pageable": {
+        "pageNumber": 0,
+        "pageSize": 10,
+        "sort": { "empty": false, "sorted": true, "unsorted": false },
+        "offset": 0,
+        "paged": true,
+        "unpaged": false
+      },
+      "last": true,
+      "totalPages": 1,
+      "totalElements": 1,
+      "size": 10,
+      "number": 0,
+      "sort": { "empty": false, "sorted": true, "unsorted": false },
+      "first": true,
+      "numberOfElements": 1,
+      "empty": false
+    }
+    ```
 
-## Resumen endpoints (Admin Agencia)
+#### 2. Obtener Detalles de una Agencia
+-   **Método HTTP:** `GET`
+-   **URL:** `/api/tenant/{tenantId}/public/agencies/{agencyId}`
+-   **Descripción:** Obtiene los detalles de una agencia, incluyendo la 
+    lista completa de sus colas activas.
+-   **Estado:** `Listo para Producción`
+-   **Response Body (200 OK):**
+    ```json
+    {
+      "id": "1",
+      "name": "Agencia Principal Centro",
+      "shortName": "APC",
+      "type": "Agencia",
+      "logo": null,
+      "address": "Av. Central 123",
+      "schedule": null,
+      "phone": null,
+      "isAvailable": true,
+      "activeQueues": 2,
+      "queues": [
+        {
+          "id": "101",                         // (String) ID de la cola.
+          "name": "Caja Rápida",               // (String) Nombre de la cola.
+          "icon": null,                        // (String) Nombre del ícono.
+          "peopleWaiting": 5,                  // (Integer) Personas en espera.
+          "avgTime": "3 min",                  // (String) Tiempo promedio de atención.
+          "enterpriseId": "1",                 // (String) ID de la agencia a la que pertenece.
+          "isActive": true,                    // (Boolean) Si la cola está abierta.
+          "currentTicket": "C-012",            // (String) Ticket que está siendo atendido.
+          "waitTimePerPerson": "3 min",        // (String) Tiempo de espera estimado por persona.
+          "enterprise": null                   // (Object) Detalles de la empresa (solo en endpoint de detalle de cola).
+        }
+      ]
+    }
+    ```
 
-## Resumen endpoints (Operadores)
+### Acciones Autenticadas (Requieren autenticación)
 
+**Autorización:** Requiere un JWT con el rol `ROLE_CLIENT`.
+
+#### 1. Unirse a una Cola
+-   **Método HTTP:** `POST`
+-   **URL:** `/api/tenant/{tenantId}/queues/{queueId}/join`
+-   **Descripción:** Permite a un cliente autenticado unirse a una cola.
+-   **Estado:** `Listo para Producción`
+-   **Request Body:**
+    ```json
+    {
+      "pushToken": "ExponentPushToken[xxxxxxxxxxxxxxxxx]" // (String) Token de Expo para notificaciones.
+    }
+    ```
+-   **Response Body (201 Created):**
+    ```json
+    {
+      "id": 50,                                      // (Long) ID del turno.
+      "queueRegistration": {                         // (Object) Detalles del registro en la cola.
+        "id": 75,
+        "queue": { "id": 101, "name": "Caja Rápida" /* ... */ },
+        "companyClient": { "id": 22, "fullName": "Juan Pérez" /* ... */ },
+        "registrationDateTime": 1669333000000
+      },
+      "turnStatus": {                                // (Object) Estado actual del turno.
+        "id": 1,
+        "name": "EN_ESPERA"
+      },
+      "operator": null,                              // (Object) Operario que atiende (null al inicio).
+      "orderNumber": 15,                             // (Integer) Número de orden en la cola.
+      "generationDateTime": 1669333000000,           // (Long) Timestamp de creación del turno.
+      "attentionDateTime": null,                     // (Long) Timestamp de atención (null al inicio).
+      "recordStatus": "A"
+    }
+    ```
+    *(Nota: La estructura exacta del `Turn` puede variar. Se recomienda crear un DTO `TurnResponse` para aplanar esta estructura).*
 
 ---
 
-### Reference Documentation
-For further reference, please consider the following sections:
+## Endpoints del Operario
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.5.0/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.5.0/maven-plugin/build-image.html)
-* [Spring Web](https://docs.spring.io/spring-boot/3.5.0/reference/web/servlet.html)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/3.5.0/reference/data/sql.html#data.sql.jpa-and-spring-data)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/3.5.0/reference/using/devtools.html)
-* [Spring Security](https://docs.spring.io/spring-boot/3.5.0/reference/web/spring-security.html)
-* [OAuth2 Client](https://docs.spring.io/spring-boot/3.5.0/reference/web/spring-security.html#web.security.oauth2.client)
+**Autorización:** Requiere un JWT con el rol `ROLE_OPERATOR`.
 
-### Guides
-The following guides illustrate how to use some features concretely:
+### 1. Llamar al Siguiente Turno
+-   **Método HTTP:** `POST`
+-   **URL:** `/api/tenants/{tenantId}/operator/queues/{queueId}/call-next`
+-   **Descripción:** Llama al siguiente cliente en espera en la cola 
+    especificada.
+-   **Autorización Adicional:** Requiere que el operario esté asignado a 
+    la cola.
+-   **Estado:** `Listo para Producción`
+-   **Response Body (200 OK):** `(Devuelve el objeto Turn actualizado, 
+    ahora con un estado 'LLAMANDO' y la información del operario)`
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Securing a Web Application](https://spring.io/guides/gs/securing-web/)
-* [Spring Boot and OAuth2](https://spring.io/guides/tutorials/spring-boot-oauth2/)
-* [Authenticating a User with LDAP](https://spring.io/guides/gs/authenticating-ldap/)
+### 2. Marcar Turno como Atendido
+-   **Método HTTP:** `POST`
+-   **URL:** `/api/tenants/{tenantId}/operator/turns/{turnId}/complete`
+-   **Descripción:** Finaliza un turno, cambiando su estado a 'ATENDIDO'.
+-   **Estado:** `Listo para Producción`
+-   **Response Body (200 OK):** `(Devuelve el objeto Turn actualizado con 
+    el nuevo estado)`
+
+### 3. Marcar Turno como Ausente
+-   **Método HTTP:** `POST`
+-   **URL:** `/api/tenants/{tenantId}/operator/turns/{turnId}/mark-as-absent`
+-   **Descripción:** Cambia el estado de un turno a 'AUSENTE'.
+-   **Estado:** `Listo para Producción`
+-   **Response Body (200 OK):** `(Devuelve el objeto Turn actualizado con 
+    el nuevo estado)`
+
+---
+
+## Endpoints de Administración del Tenant (En Desarrollo)
+
+*(Los endpoints para los roles `Admin Empresa`, `Admin División` y `Admin Agencia` están en desarrollo y se documentarán una vez implementados).*
