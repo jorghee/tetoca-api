@@ -40,6 +40,7 @@ public class Company {
   @Column(name = "EmpObs", length = 255)
   private String notes;
 
+  @Builder.Default
   @Column(name = "EmpEstReg", nullable = false, length = 1)
   private String recordStatus = "A";
 }
