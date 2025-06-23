@@ -30,12 +30,11 @@ la plataforma.
 -   **URL:** `/api/auth/admin/login`
 -   **Descripción:** Autentica a un Administrador SaaS usando email y 
     contraseña, y devuelve un JWT con el rol `SAAS_ADMIN`.
--   **Estado:** `Listo para Producción`
 -   **Request Body:**
     ```json
     {
-      "username": "admin@tetoca.com", // (String) Email del Admin SaaS.
-      "password": "a_strong_password" // (String) Contraseña del Admin SaaS.
+      "username": "admin@tetoca.com",       // (String) Email del Admin SaaS.
+      "password": "a_strong_password"       // (String) Contraseña del Admin SaaS.
     }
     ```
 -   **Response Body (200 OK):**
@@ -52,12 +51,11 @@ la plataforma.
 -   **Descripción:** Autentica a un trabajador (Admin Empresa, Operario, 
     etc.) de una empresa específica. El `tenantId` en la URL es crucial para 
     dirigir la autenticación a la base de datos correcta.
--   **Estado:** `Listo para Producción`
 -   **Request Body:**
     ```json
     {
-      "username": "operario1@empresa.com", // (String) Email del trabajador.
-      "password": "worker_password"       // (String) Contraseña del trabajador.
+      "username": "operario1@empresa.com",      // (String) Email del trabajador.
+      "password": "worker_password"             // (String) Contraseña del trabajador.
     }
     ```
 -   **Response Body (200 OK):**
@@ -75,12 +73,11 @@ la plataforma.
     usando un token de un proveedor OAuth (actualmente solo Google). El 
     backend valida el token, crea o recupera el usuario en la base de datos 
     Global y devuelve un JWT con el rol `CLIENT`.
--   **Estado:** `Listo para Producción`
 -   **Request Body:**
     ```json
     {
-      "provider": "google",   // (String) Proveedor de OAuth. Por ahora, solo "google".
-      "token": "ey..."          // (String) El id_token proporcionado por el SDK de Google Sign-In.
+      "provider": "google",         // (String) Proveedor de OAuth. Por ahora, solo "google".
+      "token": "ey..."              // (String) El id_token proporcionado por el SDK de Google Sign-In.
     }
     ```
 -   **Response Body (200 OK):**
@@ -103,23 +100,22 @@ la plataforma.
 -   **Descripción:** Crea una nueva empresa (tenant), su instancia de base 
     de datos asociada y dispara el provisionamiento asíncrono de la nueva 
     base de datos.
--   **Estado:** `Listo para Producción`
 -   **Request Body:**
     ```json
     {
       "company": {
-        "name": "Innovate Solutions S.A.C.",  // (String) Nombre comercial de la empresa.
-        "ruc": "20609876543",                // (String) RUC de 11 dígitos.
-        "email": "contacto@innovate.com",    // (String) Email de contacto.
-        "categoryCode": 1                    // (Integer) ID de la categoría de la empresa.
+        "name": "Innovate Solutions S.A.C.",    // (String) Nombre comercial de la empresa.
+        "ruc": "20609876543",                   // (String) RUC de 11 dígitos.
+        "email": "contacto@innovate.com",       // (String) Email de contacto.
+        "categoryCode": 1                       // (Integer) ID de la categoría de la empresa.
       },
       "instance": {
-        "tenantId": "innovate",                 // (String) Identificador único para la URL.
-        "dbName": "db_innovate",                // (String) Nombre de la base de datos a crear.
-        "dbUri": "jdbc:postgresql://localhost:5432/db_innovate", // (String) URI de conexión.
-        "dbUser": "user_innovate",              // (String) Usuario para la nueva BD.
-        "dbPassword": "a_secure_password",      // (String) Contraseña para la nueva BD.
-        "dbTypeCode": 1                         // (Integer) ID del tipo de BD (e.g., PostgreSQL).
+        "tenantId": "innovate",                                     // (String) Identificador único para la URL.
+        "dbName": "db_innovate",                                    // (String) Nombre de la base de datos a crear.
+        "dbUri": "jdbc:postgresql://localhost:5432/db_innovate",    // (String) URI de conexión.
+        "dbUser": "user_innovate",                                  // (String) Usuario para la nueva BD.
+        "dbPassword": "a_secure_password",                          // (String) Contraseña para la nueva BD.
+        "dbTypeCode": 1                                             // (Integer) ID del tipo de BD (e.g., PostgreSQL).
       }
     }
     ```
@@ -142,7 +138,6 @@ la plataforma.
 -   **Método HTTP:** `GET`
 -   **URL:** `/api/admin/companies`
 -   **Descripción:** Devuelve una lista de todas las empresas registradas.
--   **Estado:** `Listo para Producción`
 -   **Response Body (200 OK):** `(Un array de objetos CompanyResponse, 
     como el del ejemplo anterior)`
 
@@ -150,7 +145,6 @@ la plataforma.
 -   **Método HTTP:** `GET`
 -   **URL:** `/api/admin/companies/{id}`
 -   **Descripción:** Devuelve la información de una empresa específica.
--   **Estado:** `Listo para Producción`
 -   **Response Body (200 OK):** `(Un objeto CompanyResponse, como el del 
     ejemplo anterior)`
 
@@ -158,7 +152,6 @@ la plataforma.
 -   **Método HTTP:** `PUT`
 -   **URL:** `/api/admin/companies/{id}`
 -   **Descripción:** Actualiza los datos generales de una empresa.
--   **Estado:** `Listo para Producción`
 -   **Request Body:** `(Objeto CompanyRequest, sin la sección "instance")`
 -   **Response Body (200 OK):** `(Devuelve el objeto CompanyResponse 
     actualizado)`
@@ -167,7 +160,7 @@ la plataforma.
 -   **Método HTTP:** `DELETE`
 -   **URL:** `/api/admin/companies/{id}`
 -   **Descripción:** Marca una empresa y su instancia como eliminadas.
--   **Estado:** `Listo para Producción`
+
 -   **Response Body:** `(Vacío, con estado 204 No Content)`
 
 ---
@@ -181,7 +174,6 @@ la plataforma.
 -   **URL:** `/api/tenant/{tenantId}/public/agencies`
 -   **Descripción:** Devuelve una lista paginada de todas las agencias 
     activas de un tenant.
--   **Estado:** `Listo para Producción`
 -   **Response Body (200 OK):**
     ```json
     {
@@ -225,7 +217,6 @@ la plataforma.
 -   **URL:** `/api/tenant/{tenantId}/public/agencies/{agencyId}`
 -   **Descripción:** Obtiene los detalles de una agencia, incluyendo la 
     lista completa de sus colas activas.
--   **Estado:** `Listo para Producción`
 -   **Response Body (200 OK):**
     ```json
     {
@@ -264,7 +255,6 @@ la plataforma.
 -   **Método HTTP:** `POST`
 -   **URL:** `/api/tenant/{tenantId}/queues/{queueId}/join`
 -   **Descripción:** Permite a un cliente autenticado unirse a una cola.
--   **Estado:** `Listo para Producción`
 -   **Request Body:**
     ```json
     {
@@ -292,7 +282,9 @@ la plataforma.
       "recordStatus": "A"
     }
     ```
-    *(Nota: La estructura exacta del `Turn` puede variar. Se recomienda crear un DTO `TurnResponse` para aplanar esta estructura).*
+
+> **Nota:** La estructura exacta del `Turn` puede variar. Se creará un DTO 
+> `TurnResponse` para aplanar esta estructura.
 
 ---
 
@@ -307,7 +299,6 @@ la plataforma.
     especificada.
 -   **Autorización Adicional:** Requiere que el operario esté asignado a 
     la cola.
--   **Estado:** `Listo para Producción`
 -   **Response Body (200 OK):** `(Devuelve el objeto Turn actualizado, 
     ahora con un estado 'LLAMANDO' y la información del operario)`
 
@@ -315,7 +306,6 @@ la plataforma.
 -   **Método HTTP:** `POST`
 -   **URL:** `/api/tenants/{tenantId}/operator/turns/{turnId}/complete`
 -   **Descripción:** Finaliza un turno, cambiando su estado a 'ATENDIDO'.
--   **Estado:** `Listo para Producción`
 -   **Response Body (200 OK):** `(Devuelve el objeto Turn actualizado con 
     el nuevo estado)`
 
@@ -323,7 +313,6 @@ la plataforma.
 -   **Método HTTP:** `POST`
 -   **URL:** `/api/tenants/{tenantId}/operator/turns/{turnId}/mark-as-absent`
 -   **Descripción:** Cambia el estado de un turno a 'AUSENTE'.
--   **Estado:** `Listo para Producción`
 -   **Response Body (200 OK):** `(Devuelve el objeto Turn actualizado con 
     el nuevo estado)`
 
@@ -331,4 +320,5 @@ la plataforma.
 
 ## Endpoints de Administración del Tenant (En Desarrollo)
 
-*(Los endpoints para los roles `Admin Empresa`, `Admin División` y `Admin Agencia` están en desarrollo y se documentarán una vez implementados).*
+Los endpoints para los roles `Admin Empresa`, `Admin División` y `Admin 
+Agencia` están en desarrollo y se documentarán una vez implementados
