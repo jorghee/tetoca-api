@@ -53,27 +53,23 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     
     switch (userType) {
       case "saas":
-        return loadSaaSAdmin(identifier);
+        return loadSaaSAdmin(identifier, username);
       case "worker":
-        return loadWorker(identifier);
+        return loadWorker(identifier, username);
       case "oauth":
-        // Este caso ahora es problemático porque `loadUserByUsername` no tiene suficiente
-        // información (email, name) para crear un cliente. La lógica "get or create"
-        // se manejará en AuthService, que sí tiene el OAuthUserInfo completo.
-        // Aquí, simplemente lanzamos una excepción para forzar el flujo correcto.
-        throw new UnsupportedOperationException("OAuth user loading is not done directly here. Use the AuthService flow.");
+        return loadClient(identifier, username);
       default:
         throw new UsernameNotFoundException("User type not supported: " + userType);
     }
   }
 
-  private UserDetails loadSaaSAdmin(String email) {
+  private UserDetails loadSaaSAdmin(String email, String fullUsername) {
     SaaSAdmin admin = saasAdminRepository.findByEmail(email)
       .orElseThrow(() -> new UsernameNotFoundException("Admin SaaS not found with email: " + email));
-    return SaaSAdminDetailsImpl.build(admin);
+    return SaaSAdminDetailsImpl.build(admin, fullUsername);
   }
 
-  private UserDetails loadWorker(String email) {
+  private UserDetails loadWorker(String email, String fullUsername) {
     Worker worker = workerRepository.findByEmail(email)
       .orElseThrow(() -> new UsernameNotFoundException("Worker not found with email: " + email));
 
@@ -94,6 +90,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
       throw new UsernameNotFoundException("The worker " + email + " has no assigned roles");
     }
     
-    return UserDetailsImpl.build(worker, authorities);
+    return UserDetailsImpl.build(worker, authorities, fullUsername);
+  }
+
+  private UserDetails loadClient(String externalUid, String fullUsername) {
+    Client client = clientManagementService.findByExternalUid(externalUid)
+      .orElseThrow(() -> new UsernameNotFoundException("Client not found with external UID: " + externalUid));
+    return ClientDetailsImpl.build(client, fullUsername);
   }
 }
