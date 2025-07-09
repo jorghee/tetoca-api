@@ -22,18 +22,21 @@ public class ClientDetailsImpl implements UserDetails {
   private final String email;
   private final boolean active;
   private final Collection<? extends GrantedAuthority> authorities;
+  private final String username;
 
   public ClientDetailsImpl(Integer id, String externalUid, String fullName, String email,
-                           boolean active, Collection<? extends GrantedAuthority> authorities) {
+                           boolean active, Collection<? extends GrantedAuthority> authorities,
+                           String username) {
     this.id = id;
     this.externalUid = externalUid;
     this.fullName = fullName;
     this.email = email;
     this.active = active;
     this.authorities = authorities;
+    this.username = username;
   }
 
-  public static ClientDetailsImpl build(Client client) {
+  public static ClientDetailsImpl build(Client client, String fullUsername) {
     List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_CLIENT"));
 
     return new ClientDetailsImpl(
@@ -42,7 +45,8 @@ public class ClientDetailsImpl implements UserDetails {
       client.getName(),
       client.getEmail(),
       "A".equalsIgnoreCase(client.getRecordStatus()),
-      authorities
+      authorities,
+      fullUsername
     );
   }
 
@@ -53,7 +57,7 @@ public class ClientDetailsImpl implements UserDetails {
   public String getPassword() { return null; }
 
   @Override
-  public String getUsername() { return this.email; }
+  public String getUsername() { return this.username; }
 
   @Override
   public boolean isAccountNonExpired() { return true; }
