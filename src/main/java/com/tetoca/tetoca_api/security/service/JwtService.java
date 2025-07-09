@@ -32,16 +32,13 @@ public class JwtService {
     return claimsResolver.apply(claims);
   }
 
-  public String generateToken(UserDetails userDetails) {
-    return generateToken(new HashMap<>(), userDetails);
-  }
-
-  public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+  public String generateTokenWithSubject(String subject) {
     return Jwts.builder()
-      .setClaims(extraClaims)
-      .setSubject(userDetails.getUsername())
-      .setIssuedAt(new Date(System.currentTimeMillis()))
-      .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+      .claims()
+      .subject(subject)
+      .issuedAt(new Date(System.currentTimeMillis()))
+      .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
+      .and()
       .signWith(getSignInKey(), SignatureAlgorithm.HS256)
       .compact();
   }
@@ -68,7 +65,7 @@ public class JwtService {
   }
 
   private Key getSignInKey() {
-      byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-      return Keys.hmacShaKeyFor(keyBytes);
+    byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+    return Keys.hmacShaKeyFor(keyBytes);
   }
 }

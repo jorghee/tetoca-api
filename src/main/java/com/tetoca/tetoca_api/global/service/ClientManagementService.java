@@ -9,12 +9,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ClientManagementService {
 
   private final ClientRepository clientRepository;
+
+  /**
+   * Busca un cliente por su identificador único externo.
+   * Este método es utilizado por UserDetailsServiceImpl para cargar los detalles del cliente
+   * durante la validación del token JWT.
+   *
+   * @param externalUid El identificador único del cliente.
+   * @return Un Optional que contiene al cliente si existe.
+   */
+  @Transactional(readOnly = true)
+  public Optional<Client> findByExternalUid(String externalUid) {
+    return clientRepository.findByExternalUid(externalUid);
+  }
 
   /**
    * Obtiene un cliente existente por su UID externo o crea uno nuevo si no existe.

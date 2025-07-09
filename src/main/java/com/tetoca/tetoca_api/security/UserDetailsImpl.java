@@ -23,6 +23,7 @@ public class UserDetailsImpl implements UserDetails {
   private final Integer id;
   private final String fullName;
   private final String email;
+  private final String username;
 
   @JsonIgnore
   private final String password;
@@ -31,11 +32,12 @@ public class UserDetailsImpl implements UserDetails {
 
   private final Collection<? extends GrantedAuthority> authorities; // Roles
 
-  public UserDetailsImpl(Integer id, String fullName, String email, String password,
+  public UserDetailsImpl(Integer id, String fullName, String email, String username, String password,
                          String recordStatus, Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
     this.fullName = fullName;
     this.email = email;
+    this.username = username;
     this.password = password;
     this.recordStatus = recordStatus;
     this.authorities = authorities;
@@ -50,11 +52,13 @@ public class UserDetailsImpl implements UserDetails {
    * @param authorities La colección de roles/autoridades calculada para este trabajador.
    * @return una nueva instancia de UserDetailsImpl.
    */
-  public static UserDetailsImpl build(Worker worker, Collection<? extends GrantedAuthority> authorities) {
+  public static UserDetailsImpl build(Worker worker,
+      Collection<? extends GrantedAuthority> authorities, String fullUsername) {
     return new UserDetailsImpl(
         worker.getId(),
         worker.getFullName(),
         worker.getEmail(),
+        fullUsername,
         worker.getPassword(),
         worker.getRecordStatus(),
         authorities
@@ -62,16 +66,13 @@ public class UserDetailsImpl implements UserDetails {
   }
 
   @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return authorities;
-  }
+  public Collection<? extends GrantedAuthority> getAuthorities() { return authorities; }
 
   @Override
   public String getPassword() { return password; }
 
-  // Usamos el email como el identificador único para el login.
   @Override
-  public String getUsername() { return email; }
+  public String getUsername() { return username; }
 
   // La lógica de expiración de cuentas no está implementada, por lo que siempre es true.
   @Override

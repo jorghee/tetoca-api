@@ -42,8 +42,10 @@ public class AuthService {
     OAuthValidationService validationService = oAuthStrategyFactory.findStrategy(request.getProvider());
     OAuthUserInfo userInfo = validationService.validateAndExtractUserInfo(request.getToken());
     Client client = clientManagementService.getOrCreateClient(userInfo);
-    UserDetails userDetails = ClientDetailsImpl.build(client);
-    String jwt = jwtService.generateToken(userDetails);
+
+    // Construye el subject del JWT con el formato esperado "oauth:externalUid"
+    String jwtSubject = "oauth:" + client.getExternalUid();
+    String jwt = jwtService.generateTokenWithSubject(jwtSubject);
     
     return AuthResponse.builder().token(jwt).build();
   }
@@ -54,8 +56,7 @@ public class AuthService {
     );
 
     // UserDetailsService ya se encarga de cambiar el contexto de BD si es un worker
-    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-    String jwt = jwtService.generateToken(userDetails);
+    String jwt = jwtService.generateTokenWithSubject(username);
     return AuthResponse.builder().token(jwt).build();
   }
 }

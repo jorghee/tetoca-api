@@ -18,6 +18,7 @@ public class SaaSAdminDetailsImpl implements UserDetails {
   private final Integer id;
   private final String fullName;
   private final String email;
+  private final String username;
 
   @JsonIgnore
   private final String password;
@@ -26,16 +27,18 @@ public class SaaSAdminDetailsImpl implements UserDetails {
   private final Collection<? extends GrantedAuthority> authorities;
 
   public SaaSAdminDetailsImpl(Integer id, String fullName, String email, String password,
-                              String recordStatus, Collection<? extends GrantedAuthority> authorities) {
+                              String recordStatus, Collection<? extends GrantedAuthority> authorities,
+                              String username) {
     this.id = id;
     this.fullName = fullName;
     this.email = email;
     this.password = password;
     this.recordStatus = recordStatus;
     this.authorities = authorities;
+    this.username = username;
   }
 
-  public static SaaSAdminDetailsImpl build(SaaSAdmin admin) {
+  public static SaaSAdminDetailsImpl build(SaaSAdmin admin, String fullUsername) {
     // El administrador de SaaS siempre tiene el rol 'SAAS_ADMIN'
     List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_SAAS_ADMIN"));
 
@@ -45,40 +48,28 @@ public class SaaSAdminDetailsImpl implements UserDetails {
       admin.getEmail(),
       admin.getPassword(),
       admin.getRecordStatus(),
-      authorities
+      authorities,
+      fullUsername
     );
   }
 
   @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return authorities;
-  }
+  public Collection<? extends GrantedAuthority> getAuthorities() { return authorities; }
 
   @Override
-  public String getPassword() {
-    return password;
-  }
+  public String getPassword() { return password; }
 
   @Override
-  public String getUsername() {
-    // Usamos el email como identificador de login
-    return email;
-  }
+  public String getUsername() { return username; }
 
   @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
+  public boolean isAccountNonExpired() { return true; }
 
   @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
+  public boolean isAccountNonLocked() { return true; }
 
   @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
+  public boolean isCredentialsNonExpired() { return true; }
 
   @Override
   public boolean isEnabled() {
