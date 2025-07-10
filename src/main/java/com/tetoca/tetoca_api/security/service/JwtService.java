@@ -1,5 +1,6 @@
 package com.tetoca.tetoca_api.security.service;
 
+import com.tetoca.tetoca_api.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -11,9 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.function.Function;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 @Service
 public class JwtService {
@@ -27,14 +28,19 @@ public class JwtService {
     return extractClaim(token, Claims::getSubject);
   }
 
+  public String extractTenantId(String token) {
+    return extractClaim(token, claims -> claims.get("tenantId", String.class));
+  }
+
   public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
     final Claims claims = extractAllClaims(token);
     return claimsResolver.apply(claims);
   }
 
-  public String generateTokenWithSubject(String subject) {
+  public String generateToken(String subject, Map<String, Object> extraClaims) {
     return Jwts.builder()
       .claims()
+      .add(extraClaims)
       .subject(subject)
       .issuedAt(new Date(System.currentTimeMillis()))
       .expiration(new Date(System.currentTimeMillis() + jwtExpiration))

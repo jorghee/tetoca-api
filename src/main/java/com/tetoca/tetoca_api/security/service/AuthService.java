@@ -14,6 +14,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -27,15 +31,28 @@ public class AuthService {
   public AuthResponse loginSaaSAdmin(LoginRequest request) {
     TenantContextHolder.clear();
     String prefixedUsername = "saas:" + request.getUsername();
-    return authenticateAndGenerateToken(prefixedUsername, request.getPassword());
+    authenticationManager.authenticate(
+      new UsernamePasswordAuthenticationToken(prefixedUsername, request.getPassword())
+    );
+
+    String jwt = jwtService.generateToken(prefixedUsername, Collections.emptyMap());
+    return AuthResponse.builder().token(jwt).build();
   }
 
   public AuthResponse loginWorker(LoginRequest request, String tenantId) {
     TenantContextHolder.setTenantId(tenantId);
     String prefixedUsername = "worker:" + request.getUsername();
-    AuthResponse response = authenticateAndGenerateToken(prefixedUsername, request.getPassword());
+    authenticationManager.authenticate(
+      new UsernamePasswordAuthenticationToken(prefixedUsername, request.getPassword())
+    );
+
+    Map<String, Object> extraClaims = new HashMap<>();
+    extraClaims.put("tenantId", tenantId);
+
+    String jwt = jwtService.generateToken(prefixedUsername, extraClaims);
+
     TenantContextHolder.clear();
-    return response;
+    return AuthResponse.builder().token(jwt).build();
   }
 
   public AuthResponse loginOrRegisterClient(OAuthRequest request) {
@@ -45,18 +62,8 @@ public class AuthService {
 
     // Construye el subject del JWT con el formato esperado "oauth:externalUid"
     String jwtSubject = "oauth:" + client.getExternalUid();
-    String jwt = jwtService.generateTokenWithSubject(jwtSubject);
+    String jwt = jwtService.generateToken(jwtSubject, Collections.emptyMap());
     
-    return AuthResponse.builder().token(jwt).build();
-  }
-  
-  private AuthResponse authenticateAndGenerateToken(String username, String password) {
-    authenticationManager.authenticate(
-      new UsernamePasswordAuthenticationToken(username, password)
-    );
-
-    // UserDetailsService ya se encarga de cambiar el contexto de BD si es un worker
-    String jwt = jwtService.generateTokenWithSubject(username);
     return AuthResponse.builder().token(jwt).build();
   }
 }
