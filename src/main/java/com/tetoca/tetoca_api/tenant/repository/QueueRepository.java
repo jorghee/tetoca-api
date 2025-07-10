@@ -8,6 +8,8 @@ import com.tetoca.tetoca_api.tenant.model.Queue;
 import com.tetoca.tetoca_api.tenant.model.Turn;
 
 import java.util.List;
+import org.springframework.data.jpa.repository.EntityGraph;
+import java.util.Optional;
 
 @Repository
 public interface QueueRepository extends JpaRepository<Queue, Integer> {
@@ -48,11 +50,23 @@ public interface QueueRepository extends JpaRepository<Queue, Integer> {
    * @param queueId El ID de la cola.
    * @return Una lista que contiene el turno actual (o vacía si no hay ninguno).
    */
-  @Query("SELECT t FROM Turn t " +
-         "WHERE t.queueRegistration.queue.id = :queueId " +
-         "AND t.turnStatus.name = 'LLAMANDO' " +
-         "AND t.recordStatus = 'A' " +
-         "ORDER BY t.attentionDateTime DESC")
+  @Query(value = "SELECT t.* FROM A3T_TURNO t " +
+         "JOIN A2T_REGISTRO_COLA qr ON t.TurRegColCod = qr.RegColCod " +
+         "JOIN AZZ_ESTADO_TURNO ts ON t.TurEstTurCod = ts.EstTurCod " +
+         "WHERE qr.RegColColCod = :queueId AND ts.EstTurNom = 'LLAMANDO' AND t.TurEstReg = 'A' " +
+         "ORDER BY t.TurFecHorAte DESC", nativeQuery = true)
   List<Turn> findCurrentServingTurn(@Param("queueId") Integer queueId);
+
+  /**
+   * Busca una cola por su ID y carga todas sus relaciones importantes.
+   * @param id El ID de la cola.
+   * @return Una Queue con sus relaciones cargadas.
+   */
+  @Query("SELECT q FROM Queue q " +
+         "LEFT JOIN FETCH q.queueStatus " +
+         "LEFT JOIN FETCH q.queueType " +
+         "LEFT JOIN FETCH q.agency " +
+         "WHERE q.id = :id")
+  Optional<Queue> findByIdWithRelationships(@Param("id") Integer id);
 }
 
