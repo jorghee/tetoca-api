@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 import com.tetoca.tetoca_api.global.model.Company;
 import com.tetoca.tetoca_api.global.dto.company.CompanyResponse;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,4 +28,10 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
          "FROM Company c JOIN Instance i ON c.id = i.company.id " +
          "WHERE c.recordStatus <> :excludedStatus")
   List<CompanyResponse> findAllCompaniesAsResponse(String excludedStatus);
+
+  @Query("SELECT c FROM Company c " +
+         "LEFT JOIN FETCH c.companyCategory " +
+         "LEFT JOIN FETCH c.companyState " +
+         "WHERE c.id = :id AND c.recordStatus <> :recordStatus")
+  Optional<Company> findByIdAndFetchRelations(@Param("id") Integer id, @Param("recordStatus") String recordStatus);
 }

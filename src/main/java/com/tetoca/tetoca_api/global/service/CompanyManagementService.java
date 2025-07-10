@@ -158,7 +158,7 @@ public class CompanyManagementService {
   }
   
   private Company findActiveCompanyById(Integer id) {
-    return companyRepository.findByIdAndRecordStatusNot(id, STATUS_DELETED)
+    return companyRepository.findByIdAndFetchRelations(id, STATUS_DELETED) 
       .orElseThrow(() -> new ResourceNotFoundException("Empresa no encontrada con ID: " + id));
   }
   
