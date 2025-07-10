@@ -1,5 +1,6 @@
 package com.tetoca.tetoca_api.security.filter;
 
+import com.tetoca.tetoca_api.multitenant.context.TenantContextHolder;
 import com.tetoca.tetoca_api.security.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -45,19 +46,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     username = jwtService.extractUsername(jwt);
 
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-      // Cargamos los detalles del usuario desde la base de datos (Global o Tenant según el prefijo).
-      UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+      boolean isWorker = username.startsWith("worker:");
+      if (isWorker) {
+        String tenantId = jwtService.extractTenantId(jwt);
+        if (tenantId == null) {
+          // Token de trabajador inválido sin tenantId, no se puede continuar.
+          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+          return;
+        }
+        // Establecemos el contexto del tenant ANTES de cualquier acceso a la BD.
+        TenantContextHolder.setTenantId(tenantId);
+      }
 
-      if (jwtService.isTokenValid(jwt, userDetails)) {
-        // Creamos un token de autenticación para Spring Security.
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-          userDetails,
-          null,
-          userDetails.getAuthorities()
-        );
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+      try {
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+        if (jwtService.isTokenValid(jwt, userDetails)) {
+          UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+            userDetails, null, userDetails.getAuthorities()
+          );
+          authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+          SecurityContextHolder.getContext().setAuthentication(authToken);
+        }
+      } finally {
+        if (isWorker) TenantContextHolder.clear();
       }
     }
     filterChain.doFilter(request, response);
