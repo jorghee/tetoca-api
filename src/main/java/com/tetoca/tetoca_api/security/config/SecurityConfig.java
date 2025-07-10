@@ -28,7 +28,6 @@ public class SecurityConfig {
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/api/auth/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/tenant/{tenantId}/public/**").permitAll()
-        .requestMatchers(HttpMethod.GET, "/api/tenant/{tenantId}/ping").permitAll()
         .requestMatchers("/api/admin/**").authenticated()
         .requestMatchers("/api/tenant/**").authenticated()
         .anyRequest().authenticated()
