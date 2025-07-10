@@ -31,16 +31,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-    @NonNull HttpServletRequest request,
-    @NonNull HttpServletResponse response,
-    @NonNull FilterChain filterChain
-  ) throws ServletException, IOException {
+      @NonNull HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull FilterChain filterChain) throws ServletException, IOException {
 
     final String authHeader = request.getHeader("Authorization");
     final String jwt;
     final String username;
 
-    // Si no hay cabecera de autorización o no empieza con "Bearer ", pasamos al siguiente filtro.
+    // Si no hay cabecera de autorización o no empieza con "Bearer ", pasamos al
+    // siguiente filtro.
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
       filterChain.doFilter(request, response);
       return;
@@ -48,14 +48,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     try {
       jwt = authHeader.substring(7);
-      
+
       // Verificar que el token no esté vacío
       if (jwt.trim().isEmpty()) {
         log.warn("Empty JWT token received");
         filterChain.doFilter(request, response);
         return;
       }
-      
+
       username = jwtService.extractUsername(jwt);
 
       if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -76,17 +76,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
           if (jwtService.isTokenValid(jwt, userDetails)) {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-              userDetails, null, userDetails.getAuthorities()
-            );
+                userDetails, null, userDetails.getAuthorities());
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
           }
         } catch (Exception e) {
           log.error("Error loading user details for username: {}", username, e);
-          if (isWorker) TenantContextHolder.clear();
+          if (isWorker)
+            TenantContextHolder.clear();
           // No devolver error, simplemente continuar sin autenticación
         } finally {
-          if (isWorker) TenantContextHolder.clear();
+          if (isWorker)
+            TenantContextHolder.clear();
         }
       }
     } catch (Exception e) {
@@ -94,7 +95,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       // En caso de error, simplemente continuar sin autenticación
       // Spring Security manejará la falta de autenticación en endpoints protegidos
     }
-    
+
     filterChain.doFilter(request, response);
   }
 }
