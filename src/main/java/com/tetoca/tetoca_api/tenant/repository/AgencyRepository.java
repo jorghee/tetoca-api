@@ -39,4 +39,6 @@ public interface AgencyRepository extends JpaRepository<Agency, Integer> {
   Integer countActiveQueuesByAgencyId(@Param("agencyId") Integer agencyId);
   
   boolean existsByNameAndDivision(String name, Division division);
+
+  boolean existsByNameIgnoreCaseAndDivision_Id(String name, Integer divisionId);
 }
