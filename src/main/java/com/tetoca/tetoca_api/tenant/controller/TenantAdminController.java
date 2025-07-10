@@ -1,5 +1,8 @@
 package com.tetoca.tetoca_api.tenant.controller;
 
+import com.tetoca.tetoca_api.tenant.dto.request.DivisionCreateRequest;
+import com.tetoca.tetoca_api.tenant.dto.DivisionResponse;
+import com.tetoca.tetoca_api.tenant.service.DivisionManagementService;
 import com.tetoca.tetoca_api.tenant.dto.request.WorkerCreateRequest;
 import com.tetoca.tetoca_api.tenant.dto.WorkerResponse;
 import com.tetoca.tetoca_api.tenant.service.WorkerManagementService;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class TenantAdminController {
   
   private final WorkerManagementService workerManagementService;
+  private final DivisionManagementService divisionManagementService;
 
   /**
    * Endpoint para crear un Administrador de Empresa.
@@ -33,6 +37,24 @@ public class TenantAdminController {
     @Valid @RequestBody WorkerCreateRequest request
   ) {
     WorkerResponse response = workerManagementService.createCompanyAdmin(request);
+    return new ResponseEntity<>(response, HttpStatus.CREATED);
+  }
+
+  /**
+   * Endpoint para crear una nueva División y su primer Administrador de División.
+   * Autorizado solo para Administradores de Empresa.
+   *
+   * @param tenantId  El ID del tenant.
+   * @param request   Contiene los datos de la división y del nuevo administrador.
+   * @return Una ResponseEntity con los datos de la división creada.
+   */
+  @PostMapping("/divisions")
+  @PreAuthorize("hasRole('COMPANY_ADMIN')")
+  public ResponseEntity<DivisionResponse> createDivision(
+    @PathVariable String tenantId,
+    @Valid @RequestBody DivisionCreateRequest request
+  ) {
+    DivisionResponse response = divisionManagementService.createDivisionWithAdmin(request);
     return new ResponseEntity<>(response, HttpStatus.CREATED);
   }
 }
