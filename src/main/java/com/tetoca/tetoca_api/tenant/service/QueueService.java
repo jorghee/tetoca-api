@@ -7,6 +7,7 @@ import com.tetoca.tetoca_api.tenant.model.Queue;
 import com.tetoca.tetoca_api.tenant.model.Turn;
 import com.tetoca.tetoca_api.tenant.repository.QueueRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +39,7 @@ public class QueueService {
    */
   @Transactional(readOnly = true)
   public QueueResponse getQueueDetailsById(Integer queueId) {
-    Queue queue = queueRepository.findById(queueId)
+    Queue queue = queueRepository.findByIdWithRelationships(queueId)
       .orElseThrow(() -> new ResourceNotFoundException("Queue", "id", queueId));
 
     if (!"A".equals(queue.getRecordStatus())) {
