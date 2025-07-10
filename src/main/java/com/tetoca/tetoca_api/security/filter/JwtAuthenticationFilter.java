@@ -1,12 +1,7 @@
 package com.tetoca.tetoca_api.security.filter;
 
-import com.tetoca.tetoca_api.multitenant.context.TenantContextHolder;
-import com.tetoca.tetoca_api.security.service.JwtService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,8 +11,17 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
+import com.tetoca.tetoca_api.multitenant.context.TenantContextHolder;
+import com.tetoca.tetoca_api.security.service.JwtService;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -42,36 +46,55 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return;
     }
 
-    jwt = authHeader.substring(7);
-    username = jwtService.extractUsername(jwt);
-
-    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-      boolean isWorker = username.startsWith("worker:");
-      if (isWorker) {
-        String tenantId = jwtService.extractTenantId(jwt);
-        if (tenantId == null) {
-          // Token de trabajador inválido sin tenantId, no se puede continuar.
-          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-          return;
-        }
-        // Establecemos el contexto del tenant ANTES de cualquier acceso a la BD.
-        TenantContextHolder.setTenantId(tenantId);
+    try {
+      jwt = authHeader.substring(7);
+      
+      // Verificar que el token no esté vacío
+      if (jwt.trim().isEmpty()) {
+        log.warn("Empty JWT token received");
+        filterChain.doFilter(request, response);
+        return;
       }
+      
+      username = jwtService.extractUsername(jwt);
 
-      try {
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
-        if (jwtService.isTokenValid(jwt, userDetails)) {
-          UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-            userDetails, null, userDetails.getAuthorities()
-          );
-          authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-          SecurityContextHolder.getContext().setAuthentication(authToken);
+      if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        boolean isWorker = username.startsWith("worker:");
+        if (isWorker) {
+          String tenantId = jwtService.extractTenantId(jwt);
+          if (tenantId == null) {
+            log.warn("Worker token without tenantId: {}", username);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+          }
+          // Establecemos el contexto del tenant ANTES de cualquier acceso a la BD.
+          TenantContextHolder.setTenantId(tenantId);
         }
-      } finally {
-        if (isWorker) TenantContextHolder.clear();
+
+        try {
+          UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+          if (jwtService.isTokenValid(jwt, userDetails)) {
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+              userDetails, null, userDetails.getAuthorities()
+            );
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+          }
+        } catch (Exception e) {
+          log.error("Error loading user details for username: {}", username, e);
+          if (isWorker) TenantContextHolder.clear();
+          // No devolver error, simplemente continuar sin autenticación
+        } finally {
+          if (isWorker) TenantContextHolder.clear();
+        }
       }
+    } catch (Exception e) {
+      log.error("Error processing JWT token: {}", e.getMessage());
+      // En caso de error, simplemente continuar sin autenticación
+      // Spring Security manejará la falta de autenticación en endpoints protegidos
     }
+    
     filterChain.doFilter(request, response);
   }
 }
